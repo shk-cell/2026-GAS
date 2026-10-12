@@ -1641,6 +1641,25 @@ function clean_(value, max, label) {
       </div>
     </section>
 
+    <!-- Tweak: 바꿔 보기 (게시판) -->
+    <section class="slide tight" aria-label="바꿔 보기 (게시판)">
+      <div class="inner">
+        <h2>바꿔 보기 : 우리 반 게시판으로</h2>
+        <div class="tscroll">
+          <table class="tweak">
+            <thead><tr><th>몇 번째 줄</th><th>지금</th><th>이렇게 바꿔 보기</th><th>무엇이 바뀌나</th></tr></thead>
+            <tbody>
+            <tr><td class="ln">90<small>index.html</small></td><td><code>Class Board Practice</code></td><td class="to"><code>3학년 2반 게시판</code></td><td><span class="chip k-html">HTML</span>맨 위 제목 글자</td></tr>
+            <tr><td class="ln">105<small>index.html</small></td><td><code>&gt;Post&lt;</code></td><td class="to"><code>&gt;올리기&lt;</code></td><td><span class="chip k-html">HTML</span>글 올리기 버튼 글자 (&gt; &lt; 사이만 바꿔요)</td></tr>
+            <tr><td class="ln">13<small>index.html</small></td><td><code>#1A5FD0</code></td><td class="to"><code>#188038</code></td><td><span class="chip k-css">CSS</span>버튼 · 강조 색 한꺼번에 (파랑 → 초록)</td></tr>
+            <tr><td class="ln">104<small>index.html</small></td><td><code>maxlength=&quot;1000&quot;</code></td><td class="to"><code>maxlength=&quot;200&quot;</code></td><td><span class="chip k-html">HTML</span>글 내용 최대 글자 수</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">모두 index.html 에서 바꿔요. 바꾼 뒤 Ctrl + S → 배포 → 배포 관리 → 연필(수정) → 버전: <b>새 버전</b> → 배포. 그다음 웹앱 주소를 새로고침하면 바뀌어 있어요.</p>
+      </div>
+    </section>
+
     <!-- Part 3 divider -->
     <section class="slide" aria-label="파트 3">
       <div class="inner part p3">
@@ -2259,6 +2278,25 @@ function buildRanking_(playerName) {
           <div class="row"><h3>학생</h3><p>웹앱 주소로만 접속 (시트 권한 불필요)</p></div>
           <div class="row"><h3>웹앱 액세스</h3><p>모든 사용자</p></div>
         </div>
+      </div>
+    </section>
+
+    <!-- Tweak: 바꿔 보기 (게임) -->
+    <section class="slide tight" aria-label="바꿔 보기 (게임)">
+      <div class="inner">
+        <h2>바꿔 보기 : 우리 반 게임으로</h2>
+        <div class="tscroll">
+          <table class="tweak">
+            <thead><tr><th>몇 번째 줄</th><th>지금</th><th>이렇게 바꿔 보기</th><th>무엇이 바뀌나</th></tr></thead>
+            <tbody>
+            <tr><td class="ln">67<small>index.html</small></td><td><code>Missile Dodge</code></td><td class="to"><code>미사일 피하기</code></td><td><span class="chip k-html">HTML</span>게임 제목 글자</td></tr>
+            <tr><td class="ln">337<small>index.html</small></td><td><code>&#x27;#1A5FD0&#x27;</code></td><td class="to"><code>&#x27;#E91E63&#x27;</code></td><td><span class="chip k-css">색</span>내 캐릭터 색 (JS 안의 색 값)</td></tr>
+            <tr><td class="ln">110<small>index.html</small></td><td><code>START_SPEED = 120</code></td><td class="to"><code>START_SPEED = 60</code></td><td><span class="chip k-js">JS</span>처음 미사일 속도 (느릴수록 쉬워요)</td></tr>
+            <tr><td class="ln">2<small>Code.gs</small></td><td><code>TOP_N = 10</code></td><td class="to"><code>TOP_N = 5</code></td><td><span class="chip k-js">서버 JS</span>랭킹에 보이는 사람 수</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">줄 번호 아래 파일 이름을 꼭 확인하세요. 바꾼 뒤 Ctrl + S → 배포 → 배포 관리 → 연필(수정) → 버전: <b>새 버전</b> → 배포. 그다음 웹앱 주소를 새로고침하면 바뀌어 있어요.</p>
       </div>
     </section>
 
