@@ -384,16 +384,6 @@ class ReceiverContext : ApplicationContext
         ShowNext();
     }
 
-    void Ack(long id)
-    {
-        if (id <= 0) return;   // the test message is not sent anywhere
-        string url = BuildUrl("ack", "&id=" + id);
-        ThreadPool.QueueUserWorkItem(delegate
-        {
-            try { GetJson(url); } catch { }
-        });
-    }
-
     // The tray icon is often hidden behind the ^ arrow, so a bubble pops up whenever the status changes.
     void SetStatus(string text, bool problem)
     {
@@ -409,7 +399,6 @@ class ReceiverContext : ApplicationContext
         if (popup != null || queue.Count == 0) return;
         Dictionary<string, object> m = queue.Dequeue();
         popup = new MessageForm(m);
-        popup.Acknowledged += Ack;
         popup.FormClosed += delegate { popup = null; ShowNext(); };
         popup.Show();
         popup.Activate();
@@ -436,7 +425,6 @@ class MessageForm : Form
     static readonly Color Red = Color.FromArgb(217, 48, 37);
     static readonly Color DarkRed = Color.FromArgb(150, 20, 15);
 
-    public event Action<long> Acknowledged;
     readonly long id;
     readonly System.Windows.Forms.Timer blink = new System.Windows.Forms.Timer();
     int blinks;
@@ -489,11 +477,7 @@ class MessageForm : Form
             ForeColor = Red,
             Font = new Font("Malgun Gothic", h * 0.06f, FontStyle.Bold, GraphicsUnit.Pixel)
         };
-        ok.Click += delegate
-        {
-            if (Acknowledged != null) Acknowledged(id);
-            Close();
-        };
+        ok.Click += delegate { Close(); };
         grid.Controls.Add(ok, 0, 2);
         Controls.Add(grid);
         AcceptButton = ok;

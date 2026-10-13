@@ -6,21 +6,17 @@
 // any message ("홍길동 지금 교무실로 와라"). It pops up on top of everything on
 // those PCs, with a sound and a spoken announcement.
 //
+// Nothing is logged: messages live in CacheService only until they are delivered,
+// so no spreadsheet is needed.
+//
 // Setup
-// 1. Create a spreadsheet and open [Extensions → Apps Script] from it
-//    (or create the project at script.google.com and fill in SPREADSHEET_ID).
+// 1. script.google.com → New project, paste this file and index.html.
 // 2. Change ADMIN_PASSWORD below.
 // 3. Deploy → New deployment → Web app
 //    Execute as: Me / Who has access: Anyone  (classroom PCs cannot sign in)
 
 const ADMIN_PASSWORD = '1234';            // ★ change: needed to see receivers and send messages
 
-// Spreadsheet ID (optional)
-// Leave empty if you opened this from the spreadsheet via [Extensions → Apps Script].
-// Otherwise paste the long string between /d/ and /edit in the spreadsheet's URL.
-const SPREADSHEET_ID = '';
-
-const LOG_SHEET = '보낸메시지';
 const TIME_ZONE = 'Asia/Seoul';
 const ONLINE_MS = 20000;                  // checked in within 20 s -> shown as on
 const KEEP_MSGS = 20;                     // recent messages kept per receiver
@@ -30,7 +26,6 @@ const SHOW_WITHIN_MS = 10 * 60 * 1000;    // receivers ignore messages older tha
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.mode === 'poll') return json_(pollReceiver_(p));
-  if (p.mode === 'ack') return json_(ackMessage_(p));
   return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('교실 호출')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
@@ -41,7 +36,7 @@ function json_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// ----- Receivers (plain GET requests from callu.ps1) -----
+// ----- Receivers (plain GET requests from Receiver.exe) -----
 
 // ?mode=poll&name=3학년 2반&after=<last message id seen>
 // Also serves as the receiver's check-in. The first poll (after=-1) only
@@ -63,34 +58,11 @@ function pollReceiver_(p) {
   return { latest: latest, messages: fresh };
 }
 
-// ?mode=ack&name=...&id=<message id>  (the 확인 button on the popup)
-function ackMessage_(p) {
-  const name = clean_(p.name, 20);
-  const id = String(Number(p.id));
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    const sheet = logSheet_();
-    const hits = sheet.getRange('A:A').createTextFinder(id).matchEntireCell(true).findAll();
-    for (let i = 0; i < hits.length; i++) {
-      const row = hits[i].getRow();
-      if (sheet.getRange(row, 3).getDisplayValue() === name) {
-        const cell = sheet.getRange(row, 6);
-        if (!cell.getDisplayValue()) cell.setValue(Utilities.formatDate(new Date(), TIME_ZONE, 'HH:mm:ss'));
-        return { ok: true };
-      }
-    }
-    return { error: '메시지를 찾을 수 없어요.' };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
 // ----- Admin page (google.script.run) -----
 
 function loadAdmin(password) {
   checkPassword_(password);
-  return { receivers: receivers_(), recent: recent_() };
+  return { receivers: receivers_() };
 }
 
 // data = { to: [receiver names], text, from }
@@ -113,21 +85,15 @@ function sendMessage(password, data) {
     cache.put('last_id', String(id), CACHE_TTL);
 
     const msg = { id: id, text: text, from: from };
-    const time = Utilities.formatDate(new Date(id), TIME_ZONE, 'yyyy-MM-dd HH:mm:ss');
-    const rows = [];
     to.forEach(function (name) {
       const list = messagesFor_(name);
       list.push(msg);
       cache.put('msgs_' + name, JSON.stringify(list.slice(-KEEP_MSGS)), CACHE_TTL);
-      rows.push([String(id), time, name, text, from, '']);
     });
-    const sheet = logSheet_();
-    sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, 6).setValues(rows);
-    SpreadsheetApp.flush();
   } finally {
     lock.releaseLock();
   }
-  return { receivers: receivers_(), recent: recent_() };
+  return { receivers: receivers_() };
 }
 
 // Remove a receiver that is no longer used (it comes back if it checks in again).
@@ -140,7 +106,7 @@ function removeReceiver(password, name) {
   } finally {
     lock.releaseLock();
   }
-  return { receivers: receivers_(), recent: recent_() };
+  return { receivers: receivers_() };
 }
 
 // ----- Helpers -----
@@ -149,7 +115,7 @@ function checkPassword_(password) {
   if (String(password) !== ADMIN_PASSWORD) throw new Error('비밀번호가 맞지 않아요.');
 }
 
-// Trim, cap the length, and strip leading = + - @ so text can never become a sheet formula.
+// Trim, cap the length, and strip leading = + - @ (formula-like input).
 function clean_(value, max) {
   return String(value == null ? '' : value).replace(/^[\s=+\-@]+/, '').trim().slice(0, max);
 }
@@ -207,29 +173,5 @@ function receivers_() {
       online: t > 0 && now - t < ONLINE_MS,
       seen: t ? Utilities.formatDate(new Date(t), TIME_ZONE, 'MM-dd HH:mm') : ''
     };
-  });
-}
-
-// Works both as a sheet-bound script and as a standalone script with SPREADSHEET_ID.
-function logSheet_() {
-  const ss = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(LOG_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(LOG_SHEET);
-    sheet.appendRow(['ID', '시간', '받는 곳', '메시지', '보낸 사람', '확인']);
-    sheet.setFrozenRows(1);
-    sheet.getRange('A:F').setNumberFormat('@'); // keep ids and names as plain text
-  }
-  return sheet;
-}
-
-// The latest 40 rows (one per receiver per message), newest first.
-function recent_() {
-  const sheet = logSheet_();
-  const last = sheet.getLastRow();
-  if (last < 2) return [];
-  const n = Math.min(40, last - 1);
-  return sheet.getRange(last - n + 1, 1, n, 6).getDisplayValues().reverse().map(function (r) {
-    return { id: r[0], time: r[1], to: r[2], text: r[3], from: r[4], ack: r[5] };
   });
 }
