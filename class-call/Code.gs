@@ -1,6 +1,6 @@
 // Classroom Call (Apps Script web app + classroom receivers)
 //
-// Each classroom PC runs the receiver (receiver/callu.ps1). On first start it asks
+// Each classroom PC runs the receiver (receiver/Receiver.exe). On first start it asks
 // for a name for that place ("3학년 2반", "과학실") and then checks in every few
 // seconds. The admin opens this web app, picks one or more receivers, and sends
 // any message ("홍길동 지금 교무실로 와라"). It pops up on top of everything on
