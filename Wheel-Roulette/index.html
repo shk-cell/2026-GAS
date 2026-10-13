@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #F2F5FA; color: #1C2434;
+    font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; text-align: center; }
+  h1 { font-size: 28px; margin: 0 0 12px; letter-spacing: -0.02em; }
+  canvas { width: 100%; max-width: 360px; height: auto; }
+  button {
+    font: inherit; font-weight: 700; cursor: pointer;
+    padding: 12px 32px; border: 0; border-radius: 10px;
+    background: #1A5FD0; color: #fff; font-size: 18px;
+  }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible, textarea:focus-visible { outline: 3px solid #F29900; outline-offset: 2px; }
+  #result { min-height: 3rem; margin: 16px 0 0; font-size: 28px; font-weight: 900; }
+  label { display: block; margin: 20px 0 6px; font-weight: 700; }
+  textarea {
+    width: 100%; max-width: 360px; padding: 10px 12px; font: inherit;
+    border: 1px solid #D9DFEA; border-radius: 8px; resize: vertical;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Spin the Wheel</h1>
+  <canvas id="wheel" aria-label="Spinning wheel"></canvas>
+  <div><button id="spin" type="button" onclick="spin()">Spin</button></div>
+  <p id="result" role="status"></p>
+
+  <label for="items">Items (one per line)</label>
+  <textarea id="items" rows="7">Ana
+Luis
+Sofia
+Mateo
+Camila
+Daniel</textarea>
+</div>
+
+<script>
+  var W = 360, H = 380, CX = 180, CY = 200, R = 150;
+  var COLORS = ['#1A73E8', '#D93025', '#188038', '#7B3FBF', '#00796B', '#C25E00'];
+  var FONT_FAMILY = 'system-ui, "Segoe UI", Roboto, Arial, sans-serif';
+  var FONT = 'bold 18px ' + FONT_FAMILY;
+  var canvas = document.getElementById('wheel');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  var items = [];
+  var rot = 0;
+  var spinning = false;
+
+  function readItems() {
+    items = document.getElementById('items').value
+      .split('\n')
+      .map(function (t) { return t.trim(); })
+      .filter(function (t) { return t; });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    if (items.length < 2) {
+      ctx.beginPath();
+      ctx.arc(CX, CY, R, 0, Math.PI * 2);
+      ctx.fillStyle = '#D9DFEA';
+      ctx.fill();
+      ctx.fillStyle = '#5D6879';
+      ctx.font = FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Enter at least 2 items', CX, CY);
+      return;
+    }
+
+    var seg = (Math.PI * 2) / items.length;
+    // Shrink the label font as slices get thinner (18px max, 8px min)
+    var fontSize = Math.max(8, Math.min(18, Math.floor(R * 0.55 * seg)));
+    var maxChars = fontSize >= 14 ? 10 : 14;
+    items.forEach(function (text, i) {
+      var a0 = rot + i * seg;
+      var a1 = a0 + seg;
+      var c = i % COLORS.length;
+      if (i === items.length - 1 && c === 0 && i > 0) c = 2; // avoid matching the first slice's color
+
+      ctx.beginPath();
+      ctx.moveTo(CX, CY);
+      ctx.arc(CX, CY, R, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = COLORS[c];
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(CX, CY);
+      ctx.rotate(a0 + seg / 2);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold ' + fontSize + 'px ' + FONT_FAMILY;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text.length > maxChars ? text.slice(0, maxChars) + '…' : text, R - 16, 0);
+      ctx.restore();
+    });
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(CX, CY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+
+    // Pointer at the top
+    ctx.beginPath();
+    ctx.moveTo(CX - 14, 22);
+    ctx.lineTo(CX + 14, 22);
+    ctx.lineTo(CX, 62);
+    ctx.closePath();
+    ctx.fillStyle = '#172033';
+    ctx.fill();
+  }
+
+  function spin() {
+    if (spinning) return;
+    readItems();
+    if (items.length < 2) { draw(); return; }
+
+    spinning = true;
+    document.getElementById('spin').disabled = true;
+    document.getElementById('result').textContent = '';
+
+    var start = rot;
+    var total = Math.PI * 2 * (5 + Math.random() * 3); // 5–8 turns plus a random angle
+    var duration = 4000;
+    var t0 = null;
+
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min((ts - t0) / duration, 1);
+      var eased = 1 - Math.pow(1 - p, 3); // slow down gradually
+      rot = start + total * eased;
+      draw();
+      if (p < 1) {
+        requestAnimationFrame(step);
+      } else {
+        finish();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function finish() {
+    var seg = (Math.PI * 2) / items.length;
+    var pointer = Math.PI * 1.5; // the pointer sits at the top (12 o'clock)
+    var angle = (((pointer - rot) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    var index = Math.floor(angle / seg);
+    document.getElementById('result').textContent = '🎉 ' + items[index];
+    document.getElementById('spin').disabled = false;
+    spinning = false;
+  }
+
+  document.getElementById('items').addEventListener('input', function () {
+    if (spinning) return;
+    readItems();
+    document.getElementById('result').textContent = '';
+    draw();
+  });
+
+  readItems();
+  draw();
+</script>
+</body>
+</html>

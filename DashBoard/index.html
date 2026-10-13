@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<style>
+  :root {
+    --bg: #F2F5FA;
+    --card: #FFFFFF;
+    --ink: #1C2434;
+    --muted: #5D6879;
+    --line: #D9DFEA;
+    --accent: #1A5FD0;
+    --accent-soft: #E3ECFC;
+    --danger: #C5221F;
+    --note: #FFF6D6;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 16px; letter-spacing: -0.02em; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab {
+    flex: 1; padding: 12px; font: inherit; font-weight: 700;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted);
+    border-radius: 10px; cursor: pointer;
+  }
+  .tab.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  label { display: block; font-weight: 700; margin: 14px 0 6px; }
+  label:first-child { margin-top: 0; }
+  input, textarea {
+    width: 100%; padding: 10px 12px; font: inherit; color: inherit;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  }
+  textarea { resize: vertical; }
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 3px solid #F29900; outline-offset: 2px;
+  }
+  .primary {
+    margin-top: 16px; padding: 12px 22px; font-weight: 700;
+    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+  }
+  .primary:disabled { opacity: .5; cursor: default; }
+  .msg { margin: 12px 0 0; min-height: 1.6em; font-weight: 500; }
+  .msg.ok { color: #188038; }
+  .msg.err { color: var(--danger); }
+
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .bar button {
+    padding: 6px 12px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; margin-left: 6px;
+  }
+
+  .post { border-top: 1px solid var(--line); padding: 18px 0; }
+  .post:first-child { border-top: 0; padding-top: 0; }
+  .post-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .post-head h2 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+  .del {
+    flex: none; padding: 4px 12px; background: var(--card);
+    color: var(--danger); border: 1px solid var(--danger); border-radius: 8px;
+  }
+  .meta { margin: 2px 0 10px; color: var(--muted); font-size: 14px; }
+  .meta span + span { margin-left: 12px; }
+  .body { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .comment {
+    margin: 12px 0 0; padding: 10px 12px; background: var(--note);
+    border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px;
+  }
+  .cform { display: flex; gap: 8px; margin-top: 12px; }
+  .cform button {
+    flex: none; padding: 0 14px; background: var(--accent-soft); color: var(--accent);
+    border: 0; border-radius: 8px; font-weight: 700;
+  }
+  .empty { text-align: center; color: var(--muted); padding: 24px 0; margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Class Board Practice</h1>
+
+  <div class="tabs">
+    <button id="tab-write" class="tab on" type="button" onclick="showTab('write')">Write</button>
+    <button id="tab-teacher" class="tab" type="button" onclick="showTab('teacher')">Teacher Only</button>
+  </div>
+
+  <!-- Anyone: write a post -->
+  <section id="panel-write" class="panel">
+    <label for="name">Name</label>
+    <input id="name" maxlength="20" autocomplete="off">
+    <label for="title">Title</label>
+    <input id="title" maxlength="50" autocomplete="off">
+    <label for="content">Content</label>
+    <textarea id="content" rows="6" maxlength="1000"></textarea>
+    <button id="send" class="primary" type="button" onclick="sendPost()">Post</button>
+    <p id="write-msg" class="msg" role="status"></p>
+  </section>
+
+  <!-- Teacher only: read · comment · delete -->
+  <section id="panel-teacher" class="panel" hidden>
+    <div id="login">
+      <label for="pw">Teacher password</label>
+      <input id="pw" type="password" autocomplete="off" onkeydown="if (event.key === 'Enter') login()">
+      <button class="primary" type="button" onclick="login()">Enter</button>
+      <p id="login-msg" class="msg" role="status"></p>
+    </div>
+
+    <div id="admin" hidden>
+      <div class="bar">
+        <strong id="count"></strong>
+        <span>
+          <button type="button" onclick="loadPosts()">Refresh</button>
+          <button type="button" onclick="logout()">Log out</button>
+        </span>
+      </div>
+      <p id="admin-msg" class="msg" role="status"></p>
+      <div id="list"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // After logging in, the password is kept here briefly and sent with every request to the server.
+  // (The server only sends posts back when the password is correct.)
+  var pw = '';
+
+  function $(id) { return document.getElementById(id); }
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text; // textContent: any HTML in a post is shown as text, never run
+    return node;
+  }
+
+  function setMsg(id, text, type) {
+    var node = $(id);
+    node.textContent = text || '';
+    node.className = 'msg' + (type ? ' ' + type : '');
+  }
+
+  function errText(e) {
+    return (e && e.message ? e.message : String(e)).replace(/^Error:\s*/, '');
+  }
+
+  // ---------- Tabs ----------
+  function showTab(name) {
+    $('panel-write').hidden = name !== 'write';
+    $('panel-teacher').hidden = name !== 'teacher';
+    $('tab-write').className = 'tab' + (name === 'write' ? ' on' : '');
+    $('tab-teacher').className = 'tab' + (name === 'teacher' ? ' on' : '');
+  }
+
+  // ---------- Write a post (anyone) ----------
+  function sendPost() {
+    var name = $('name').value, title = $('title').value, content = $('content').value;
+    if (!name.trim() || !title.trim() || !content.trim()) {
+      setMsg('write-msg', 'Please fill in your name, title, and content.', 'err');
+      return;
+    }
+    $('send').disabled = true;
+    setMsg('write-msg', 'Sending…');
+    google.script.run
+      .withSuccessHandler(function () {
+        $('send').disabled = false;
+        $('name').value = ''; $('title').value = ''; $('content').value = '';
+        setMsg('write-msg', 'Your post has been submitted!', 'ok');
+      })
+      .withFailureHandler(function (e) {
+        $('send').disabled = false;
+        setMsg('write-msg', errText(e), 'err');
+      })
+      .addPost(name, title, content);
+  }
+
+  // ---------- Teacher login ----------
+  function login() {
+    var input = $('pw').value;
+    if (!input) { setMsg('login-msg', 'Please enter the password.', 'err'); return; }
+    setMsg('login-msg', 'Checking…');
+    google.script.run
+      .withSuccessHandler(function (posts) {
+        pw = input;
+        $('pw').value = '';
+        setMsg('login-msg', '');
+        $('login').hidden = true;
+        $('admin').hidden = false;
+        render(posts);
+      })
+      .withFailureHandler(function (e) { setMsg('login-msg', errText(e), 'err'); })
+      .getPosts(input);
+  }
+
+  function logout() {
+    pw = '';
+    $('admin').hidden = true;
+    $('login').hidden = false;
+    $('list').textContent = '';
+    setMsg('admin-msg', '');
+  }
+
+  // ---------- Post list ----------
+  function loadPosts() {
+    setMsg('admin-msg', 'Loading…');
+    google.script.run
+      .withSuccessHandler(function (posts) { setMsg('admin-msg', ''); render(posts); })
+      .withFailureHandler(function (e) { setMsg('admin-msg', errText(e), 'err'); })
+      .getPosts(pw);
+  }
+
+  function render(posts) {
+    $('count').textContent = posts.length + (posts.length === 1 ? ' post' : ' posts');
+    var list = $('list');
+    list.textContent = '';
+    if (!posts.length) {
+      list.appendChild(el('p', 'empty', 'No posts yet.'));
+      return;
+    }
+    posts.forEach(function (p) { list.appendChild(buildPost(p)); });
+  }
+
+  function buildPost(p) {
+    var art = el('article', 'post');
+
+    var head = el('div', 'post-head');
+    head.appendChild(el('h2', '', p.title));
+    var del = el('button', 'del', 'Delete');
+    del.type = 'button';
+    del.onclick = function () { removePost(p.id); };
+    head.appendChild(del);
+    art.appendChild(head);
+
+    var meta = el('p', 'meta');
+    meta.appendChild(el('span', '', p.name));
+    meta.appendChild(el('span', '', p.time));
+    art.appendChild(meta);
+
+    art.appendChild(el('p', 'body', p.content));
+    if (p.comment) art.appendChild(el('p', 'comment', p.comment));
+
+    var form = el('div', 'cform');
+    var input = document.createElement('input');
+    input.placeholder = 'Add a comment';
+    input.maxLength = 300;
+    input.setAttribute('aria-label', 'Comment');
+    var btn = el('button', '', 'Add');
+    btn.type = 'button';
+    btn.onclick = function () { sendComment(p.id, input.value, btn); };
+    input.onkeydown = function (e) { if (e.key === 'Enter') btn.click(); };
+    form.appendChild(input);
+    form.appendChild(btn);
+    art.appendChild(form);
+
+    return art;
+  }
+
+  // ---------- Comment · delete (teacher only) ----------
+  function sendComment(id, text, btn) {
+    if (!text.trim()) return;
+    btn.disabled = true;
+    google.script.run
+      .withSuccessHandler(function () { loadPosts(); })
+      .withFailureHandler(function (e) { btn.disabled = false; setMsg('admin-msg', errText(e), 'err'); })
+      .addComment(pw, id, text);
+  }
+
+  function removePost(id) {
+    if (!confirm('Delete this post? This cannot be undone.')) return;
+    google.script.run
+      .withSuccessHandler(function () { loadPosts(); })
+      .withFailureHandler(function (e) { setMsg('admin-msg', errText(e), 'err'); })
+      .deletePost(pw, id);
+  }
+</script>
+</body>
+</html>

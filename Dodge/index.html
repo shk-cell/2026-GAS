@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+  :root {
+    --bg: #EEF2F8; --card: #FFFFFF; --line: #DDE3EE; --text: #172033; --muted: #5A6577;
+    --accent: #1A5FD0; --accent-soft: #E6EEFC; --danger: #D93025; --gold: #F2B600;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, 'Segoe UI', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; justify-content: center; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  #app { width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; }
+  .screen { flex: 1; min-height: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px; }
+  .screen.show { display: flex; }
+
+  .card { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; box-shadow: 0 8px 28px rgba(23, 32, 51, 0.06); max-height: 100%; overflow-y: auto; }
+  .logo { width: 56px; height: 56px; border-radius: 16px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  h1, h2 { margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .hint { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+  input { font: inherit; font-size: 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: #F8FAFD; color: var(--text); width: 100%; text-align: center; outline: none; transition: border-color .15s, box-shadow .15s; }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .btn { font: inherit; font-size: 16px; font-weight: 700; padding: 13px 20px; border-radius: 12px; border: 0; background: var(--accent); color: #fff; cursor: pointer; width: 100%; transition: filter .15s, transform .05s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(0.98); }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 600; }
+  .btn-row { display: flex; gap: 10px; width: 100%; }
+
+  /* Leaderboard */
+  .board { width: 100%; text-align: left; }
+  .board-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 4px 6px; }
+  .board ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .board li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: #F8FAFD; font-size: 14px; }
+  .board li.me { background: var(--accent-soft); outline: 1px solid var(--accent); }
+  .board .rk { width: 24px; text-align: center; font-weight: 700; color: var(--muted); flex: none; }
+  .board .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .board .tm { font-variant-numeric: tabular-nums; font-weight: 700; }
+  .board .msg { padding: 14px; text-align: center; color: var(--muted); font-size: 14px; background: #F8FAFD; border-radius: 10px; }
+  .board .msg.err { color: var(--danger); }
+
+  /* Game */
+  #gameScreen { justify-content: flex-start; gap: 10px; padding: 14px 16px 16px; }
+  #hud { flex: none; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+  .pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .pill b { color: var(--text); font-size: 18px; }
+  #stage { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; touch-action: none; background: #FBFCFE; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 8px 28px rgba(23, 32, 51, 0.06); cursor: crosshair; }
+
+  /* Game over */
+  .big-time { font-size: 56px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .big-time small { font-size: 22px; color: var(--muted); font-weight: 700; margin-left: 2px; }
+  #rankLine { margin: 0; font-size: 14px; color: var(--muted); min-height: 1.4em; }
+  #rankLine strong { color: var(--accent); }
+  .badge { display: none; font-size: 12px; font-weight: 700; color: #7A5B00; background: #FFF4CC; border-radius: 999px; padding: 4px 10px; }
+  .badge.show { display: inline-block; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="startScreen" class="screen show">
+    <div class="card">
+      <div class="logo">🚀</div>
+      <h1>Missile Dodge</h1>
+      <p class="hint">Drag to move your ship and dodge the missiles.<br>The longer you survive, the higher you rank.</p>
+      <input id="nameInput" placeholder="Enter your name" maxlength="10" autocomplete="off">
+      <button id="startBtn" class="btn">Start</button>
+      <div class="board">
+        <div class="board-head"><span>🏆 Top survivors</span><span id="startTotal"></span></div>
+        <ol id="startBoard"><li class="msg">Loading ranking…</li></ol>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameScreen" class="screen">
+    <div id="hud">
+      <span class="pill">⏱ <b id="timeLabel">0.0</b> s</span>
+      <span class="pill" id="bestPill">Best <b id="bestLabel">–</b></span>
+    </div>
+    <div id="stage"><canvas id="canvas" width="340" height="520"></canvas></div>
+  </div>
+
+  <div id="overScreen" class="screen">
+    <div class="card">
+      <h2>Game Over</h2>
+      <div class="big-time"><span id="finalTime">0.0</span><small>s</small></div>
+      <span id="bestBadge" class="badge">✨ New personal best</span>
+      <p id="rankLine"></p>
+      <div class="board">
+        <div class="board-head"><span>🏆 Top survivors</span><span id="overTotal"></span></div>
+        <ol id="overBoard"></ol>
+      </div>
+      <div class="btn-row">
+        <button id="menuBtn" class="btn ghost">Menu</button>
+        <button id="retryBtn" class="btn">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var W = 340, H = 520;
+  var PLAYER_R = 11, MISSILE_R = 6;
+  var START_INTERVAL = 750, MIN_INTERVAL = 90, INTERVAL_DECAY_PER_SEC = 25;
+  var START_SPEED = 120, MAX_SPEED = 520, SPEED_GROWTH_PER_SEC = 14;
+  var START_HOMING = 0.4, MAX_HOMING = 2.2, HOMING_GROWTH_PER_SEC = 0.05;
+  var MAX_SPAWN_PER_WAVE = 4;
+
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var stage = document.getElementById('stage');
+  var nameInput = document.getElementById('nameInput');
+
+  function fitCanvas() {
+    var scale = Math.max(0.1, Math.min(stage.clientWidth / W, stage.clientHeight / H));
+    canvas.style.width = Math.floor(W * scale) + 'px';
+    canvas.style.height = Math.floor(H * scale) + 'px';
+  }
+  window.addEventListener('resize', fitCanvas);
+
+  var player = { x: W / 2, y: H - 60, r: PLAYER_R };
+  var missiles = [];
+  var elapsed = 0;
+  var spawnTimer = 0;
+  var spawnInterval = START_INTERVAL;
+  var missileSpeed = START_SPEED;
+  var homingRate = START_HOMING;
+  var playerName = '';
+  var personalBest = 0;
+  var running = false;
+  var lastTime = null;
+
+  // Remember the last name used on this device (storage may be unavailable).
+  try { nameInput.value = localStorage.getItem('md-name') || ''; } catch (e) {}
+
+  function clampPlayer() {
+    player.x = Math.max(PLAYER_R, Math.min(W - PLAYER_R, player.x));
+    player.y = Math.max(PLAYER_R, Math.min(H - PLAYER_R, player.y));
+  }
+  function pointerPos(evt) {
+    var rect = canvas.getBoundingClientRect();
+    var t = evt.touches ? evt.touches[0] : evt;
+    var scaleX = canvas.width / rect.width;
+    var scaleY = canvas.height / rect.height;
+    return { x: (t.clientX - rect.left) * scaleX, y: (t.clientY - rect.top) * scaleY };
+  }
+  function movePlayerTo(evt) {
+    var p = pointerPos(evt);
+    player.x = p.x; player.y = p.y;
+    clampPlayer();
+  }
+  canvas.addEventListener('mousedown', movePlayerTo);
+  canvas.addEventListener('mousemove', function (e) { if (running) movePlayerTo(e); });
+  canvas.addEventListener('touchstart', function (e) { movePlayerTo(e); }, { passive: true });
+  canvas.addEventListener('touchmove', function (e) { e.preventDefault(); movePlayerTo(e); }, { passive: false });
+
+  function spawnMissile() {
+    var edge = Math.floor(Math.random() * 4);
+    var x, y;
+    if (edge === 0) { x = Math.random() * W; y = -20; }
+    else if (edge === 1) { x = W + 20; y = Math.random() * H; }
+    else if (edge === 2) { x = Math.random() * W; y = H + 20; }
+    else { x = -20; y = Math.random() * H; }
+    var angle = Math.atan2(player.y - y, player.x - x) + (Math.random() - 0.5) * 0.7;
+    missiles.push({
+      x: x, y: y, r: MISSILE_R,
+      vx: Math.cos(angle) * missileSpeed,
+      vy: Math.sin(angle) * missileSpeed,
+      trail: []
+    });
+  }
+
+  function updateHud() {
+    document.getElementById('timeLabel').textContent = (elapsed / 1000).toFixed(1);
+  }
+
+  function showScreen(id) {
+    ['startScreen', 'gameScreen', 'overScreen'].forEach(function (s) {
+      document.getElementById(s).classList.toggle('show', s === id);
+    });
+  }
+
+  /* ---------- Ranking ---------- */
+
+  function renderBoard(listId, totalId, data) {
+    var top = (data && data.top) || [];
+    var medals = ['🥇', '🥈', '🥉'];
+    var html = '';
+    top.forEach(function (row, i) {
+      var me = data.me && row.name === data.me;
+      html += '<li' + (me ? ' class="me"' : '') + '>' +
+        '<span class="rk">' + (medals[i] || (i + 1)) + '</span>' +
+        '<span class="nm">' + escapeHtml(row.name) + (me ? ' (you)' : '') + '</span>' +
+        '<span class="tm">' + Number(row.time).toFixed(1) + 's</span></li>';
+    });
+    if (!top.length) html = '<li class="msg">No records yet. Be the first!</li>';
+    document.getElementById(listId).innerHTML = html;
+    document.getElementById(totalId).textContent = data && data.total ? data.total + ' players' : '';
+  }
+
+  function boardMessage(listId, msg, isError) {
+    document.getElementById(listId).innerHTML =
+      '<li class="msg' + (isError ? ' err' : '') + '">' + escapeHtml(msg) + '</li>';
+  }
+
+  function loadStartRanking() {
+    boardMessage('startBoard', 'Loading ranking…');
+    google.script.run
+      .withSuccessHandler(function (data) { renderBoard('startBoard', 'startTotal', data); })
+      .withFailureHandler(function (err) { boardMessage('startBoard', 'Could not load ranking: ' + err.message, true); })
+      .getRanking();
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* ---------- Game flow ---------- */
+
+  function startGame() {
+    playerName = nameInput.value.trim().slice(0, 10) || 'Anonymous';
+    try { localStorage.setItem('md-name', playerName); } catch (e) {}
+    missiles = []; elapsed = 0; spawnTimer = START_INTERVAL;
+    missileSpeed = START_SPEED; homingRate = START_HOMING;
+    player.x = W / 2; player.y = H - 60;
+    document.getElementById('bestLabel').textContent = personalBest ? personalBest.toFixed(1) : '–';
+    updateHud();
+    showScreen('gameScreen');
+    fitCanvas();
+    draw();
+    running = true; lastTime = null;
+    requestAnimationFrame(loop);
+  }
+
+  function endGame() {
+    running = false;
+    var seconds = Math.round(elapsed / 100) / 10;
+    var isBest = seconds > personalBest;
+    if (isBest) personalBest = seconds;
+
+    document.getElementById('finalTime').textContent = seconds.toFixed(1);
+    document.getElementById('bestBadge').classList.toggle('show', isBest && seconds > 0);
+    document.getElementById('rankLine').textContent = 'Saving your record…';
+    document.getElementById('overTotal').textContent = '';
+    boardMessage('overBoard', 'Loading ranking…');
+    showScreen('overScreen');
+
+    // Save first, then show the ranking that the save returns — so your run is always included.
+    google.script.run
+      .withSuccessHandler(function (data) {
+        renderBoard('overBoard', 'overTotal', data);
+        if (data && data.myBest) personalBest = Math.max(personalBest, data.myBest);
+        document.getElementById('rankLine').innerHTML = data && data.myRank
+          ? escapeHtml(data.me) + ' is ranked <strong>#' + data.myRank + '</strong> of ' + data.total +
+            ' · best ' + Number(data.myBest).toFixed(1) + 's'
+          : '';
+      })
+      .withFailureHandler(function (err) {
+        document.getElementById('rankLine').textContent = '';
+        boardMessage('overBoard', 'Could not save your record: ' + err.message, true);
+      })
+      .saveTime(playerName, seconds);
+  }
+
+  function step(dt) {
+    elapsed += dt;
+    var elapsedSec = elapsed / 1000;
+    var dtSec = dt / 1000;
+
+    spawnInterval = Math.max(MIN_INTERVAL, START_INTERVAL - elapsedSec * INTERVAL_DECAY_PER_SEC);
+    missileSpeed = Math.min(MAX_SPEED, START_SPEED + elapsedSec * SPEED_GROWTH_PER_SEC);
+    homingRate = Math.min(MAX_HOMING, START_HOMING + elapsedSec * HOMING_GROWTH_PER_SEC);
+
+    spawnTimer -= dt;
+    if (spawnTimer <= 0) {
+      var count = Math.min(MAX_SPAWN_PER_WAVE, 1 + Math.floor(elapsedSec / 10));
+      for (var c = 0; c < count; c++) spawnMissile();
+      spawnTimer = spawnInterval;
+    }
+
+    for (var i = missiles.length - 1; i >= 0; i--) {
+      var m = missiles[i];
+      var desired = Math.atan2(player.y - m.y, player.x - m.x);
+      var cur = Math.atan2(m.vy, m.vx);
+      var diff = Math.atan2(Math.sin(desired - cur), Math.cos(desired - cur));
+      var maxTurn = homingRate * dtSec;
+      var turn = Math.max(-maxTurn, Math.min(maxTurn, diff));
+      var newAngle = cur + turn;
+      var spd = Math.hypot(m.vx, m.vy);
+      m.vx = Math.cos(newAngle) * spd;
+      m.vy = Math.sin(newAngle) * spd;
+      m.trail.push({ x: m.x, y: m.y });
+      if (m.trail.length > 8) m.trail.shift();
+      m.x += m.vx * dtSec;
+      m.y += m.vy * dtSec;
+
+      if (m.x < -40 || m.x > W + 40 || m.y < -40 || m.y > H + 40) {
+        missiles.splice(i, 1);
+        continue;
+      }
+      var dx = m.x - player.x, dy = m.y - player.y;
+      if (Math.hypot(dx, dy) < m.r + player.r) {
+        draw();
+        endGame();
+        return;
+      }
+    }
+
+    updateHud();
+  }
+
+  /* ---------- Drawing ---------- */
+
+  function drawGrid() {
+    ctx.strokeStyle = '#EDF1F7';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (var x = 20; x < W; x += 20) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, H); }
+    for (var y = 20; y < H; y += 20) { ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); }
+    ctx.stroke();
+  }
+
+  function drawPlayer() {
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.r + 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(26, 95, 208, 0.12)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#1A5FD0';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.stroke();
+  }
+
+  function drawMissile(m) {
+    for (var t = 0; t < m.trail.length; t++) {
+      var p = m.trail[t];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1 + t * 0.3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(217, 48, 37, ' + (0.04 + t * 0.03) + ')';
+      ctx.fill();
+    }
+    var angle = Math.atan2(m.vy, m.vx);
+    ctx.save();
+    ctx.translate(m.x, m.y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(m.r * 1.7, 0);
+    ctx.lineTo(-m.r, m.r * 0.8);
+    ctx.lineTo(-m.r * 0.4, 0);
+    ctx.lineTo(-m.r, -m.r * 0.8);
+    ctx.closePath();
+    ctx.fillStyle = '#D93025';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+    missiles.forEach(drawMissile);
+    drawPlayer();
+  }
+
+  function loop(ts) {
+    if (!running) return;
+    if (lastTime === null) lastTime = ts;
+    var dt = Math.min(33, ts - lastTime);
+    lastTime = ts;
+    step(dt);
+    if (running) {
+      draw();
+      requestAnimationFrame(loop);
+    }
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  nameInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') startGame(); });
+  document.getElementById('retryBtn').addEventListener('click', startGame);
+  document.getElementById('menuBtn').addEventListener('click', function () {
+    showScreen('startScreen');
+    loadStartRanking();
+  });
+
+  loadStartRanking();
+})();
+</script>
+</body>
+</html>
