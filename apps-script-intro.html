@@ -259,23 +259,6 @@
     outline: 3px solid var(--g-yellow); outline-offset: 3px;
   }
 
-  .home-link {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    left: calc(env(safe-area-inset-left, 0px) + 10px);
-    z-index: 10;
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    background: var(--stage);
-    border: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 13px; font-weight: 500;
-    text-decoration: none;
-  }
-  .home-link:hover { border-color: var(--accent); color: var(--ink); }
-  .home-link:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 2px; }
-
   .note {
     margin-top: clamp(14px, 2.4vh, 26px);
     padding: 12px 16px;
@@ -513,6 +496,43 @@
   .anatomy pre .tag { color: var(--c-cm); }
   .map-rows .row h3 { color: var(--kc, var(--ink)); }
 
+  /* Part 0: HTML / CSS / JS explainers (code tokens sit on the dark code window in both themes) */
+  .anatomy pre .tk-tag { color: #82aaf5; }
+  .anatomy pre .tk-attr { color: #FDD663; }
+  .anatomy pre .tk-val { color: #5fcf9a; }
+  .anatomy pre .tk-txt { color: #fff; font-weight: 700; }
+  .anatomy pre .tk-cm { color: var(--c-cm); }
+  .k-attr { --kc: var(--g-yellow); }
+  .anatomy .win.sm pre { font-size: clamp(12px, 1.1vw, 16px); line-height: 1.65; }
+  .try { border: 2px solid var(--ink); border-radius: 16px; background: var(--stage); padding: clamp(16px, 2.4vw, 28px); box-shadow: 6px 6px 0 var(--accent-soft); }
+  .try .lbl { margin: 0 0 12px; color: var(--muted); font-size: clamp(13px, 1.3vw, 16px); font-weight: 700; }
+  .try input { width: 100%; box-sizing: border-box; font: inherit; font-size: clamp(16px, 1.8vw, 22px); padding: 10px 14px; border: 2px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+  .try input:focus { outline: none; border-color: var(--accent); }
+  .try button { margin-top: 12px; font: inherit; font-weight: 900; font-size: clamp(16px, 1.8vw, 22px); padding: 10px 26px; border: 0; border-radius: 999px; background: var(--accent); color: var(--stage); cursor: pointer; }
+  .try button:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 3px; }
+  /* Code playground: editable code on the left, live preview on the right */
+  .pg { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(10px, 1.6vw, 18px); }
+  .pg-pane { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--code-bg); }
+  .pg-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 12px; background: rgba(255,255,255,.05); color: var(--c-cm); font-family: var(--mono); font-size: 13px; }
+  .pg-bar > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pg-bar button { flex: none; font: inherit; font-family: var(--font); font-weight: 700; padding: 4px 12px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: var(--code-ink); cursor: pointer; }
+  .pg-bar button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pg-bar button:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 2px; }
+  .pg-tabs { display: flex; gap: 6px; }
+  .pg-code { flex: 1; width: 100%; height: clamp(220px, 46vh, 460px); box-sizing: border-box; margin: 0; padding: 12px 14px; border: 0; resize: none; background: transparent; color: var(--code-ink); font-family: var(--mono); font-size: clamp(12px, 1.05vw, 15px); line-height: 1.55; tab-size: 2; white-space: pre; }
+  .pg-code:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .pg-view { flex: 1; width: 100%; height: clamp(220px, 46vh, 460px); border: 0; background: #fff; }
+  .pg-err { margin: 0; min-height: 1.6em; padding: 6px 12px; background: #fff; color: #D93025; font-family: var(--mono); font-size: 13px; font-weight: 700; border-top: 1px solid #eee; overflow-wrap: anywhere; }
+  .pg-err:empty::before { content: "오류 없음"; color: #9AA6BA; font-weight: 500; }
+  .pg-lead { margin: 0 0 clamp(10px, 1.8vh, 16px); }
+  .pg-check { margin: clamp(10px, 1.8vh, 16px) 0 0; }
+  .reveal { margin-top: clamp(12px, 2vh, 20px); font: inherit; font-weight: 700; font-size: clamp(15px, 1.6vw, 20px); padding: 10px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--stage); cursor: pointer; }
+  .reveal:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 3px; }
+  .tweak .ans { visibility: hidden; }
+  .shown .ans { visibility: visible; }
+  code.diff { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: 2px 8px; border-radius: 6px; overflow-wrap: anywhere; }
+  .try .out { margin: 16px 0 0; min-height: 1.5em; font-size: clamp(18px, 2.2vw, 28px); font-weight: 900; color: var(--accent); word-break: keep-all; }
+
   /* "바꿔 보기" tweak tables */
   .tweak { width: 100%; border-collapse: collapse; font-size: clamp(14px, 1.55vw, 20px); }
   .tweak th, .tweak td { padding: clamp(8px, 1.4vh, 14px) 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
@@ -525,7 +545,8 @@
 
   @media (max-width: 720px) {
     .tweak code { white-space: normal; overflow-wrap: anywhere; }
-    .trio, .anatomy { grid-template-columns: minmax(0, 1fr); }
+    .trio, .anatomy, .pg { grid-template-columns: minmax(0, 1fr); }
+    .pg-code, .pg-view { height: 260px; }
     .flow { flex-direction: column; }
     .flow .ar { transform: rotate(90deg); align-self: center; }
 
@@ -547,7 +568,6 @@
 </style>
 </head>
 <body>
-<a class="home-link" href="index.html">← 목록</a>
 <main class="deck">
   <div class="stage" id="stage">
 
@@ -630,7 +650,274 @@
           <div class="card k-css"><b>CSS</b><span class="q">어떻게 보이나</span><span class="eg">색, 크기, 글꼴, 배치<br>집으로 치면 인테리어</span></div>
           <div class="card k-js"><b>JS</b><span class="q">무엇을 하나</span><span class="eg">누르면 보내기, 돌리기, 점수 세기<br>집으로 치면 전기와 수도</span></div>
         </div>
-        <p class="note">기록을 남기려면 <b>저장소</b>가, 여러 사람이 함께 보려면 <b>서버</b>가 필요해요. 다음 장에서 하나씩 꺼 보며 확인해 봐요.</p>
+        <p class="note">기록을 남기려면 <b>저장소</b>가, 여러 사람이 함께 보려면 <b>서버</b>가 필요해요. 하나씩 알아본 뒤 직접 꺼 보며 확인해 봐요.</p>
+      </div>
+    </section>
+
+    <!-- HTML: what it is -->
+    <section class="slide tight" aria-label="HTML이란">
+      <div class="inner">
+        <h2>HTML · 화면에 무엇이 있는지 적어요</h2>
+        <p class="def">HTML은 웹페이지에 <b>무엇이</b> 있고 <b>어떤 순서로</b> 놓이는지 적는 언어예요.</p>
+        <div class="rows compact">
+          <div class="row"><h3>이름</h3><p>HyperText Markup Language<small>글자에 &lt;표시&gt;(태그)를 붙여 "이건 제목, 이건 버튼"이라고 알려 주는 언어</small></p></div>
+          <div class="row"><h3>하는 일</h3><p>제목, 글, 입력칸, 버튼, 그림을 화면에 놓기</p></div>
+          <div class="row"><h3>놓이는 순서</h3><p>적힌 순서대로 위에서 아래로 쌓여요</p></div>
+          <div class="row"><h3>맡지 않는 일</h3><p>색과 크기는 CSS, 누르면 움직이는 건 JS가 맡아요</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HTML: reading one tag -->
+    <section class="slide" aria-label="태그 읽는 법">
+      <div class="inner anatomy">
+        <div>
+          <h2>태그 읽는 법</h2>
+          <div class="rows compact map-rows">
+            <div class="row k-html"><h3>&lt;h1&gt;</h3><p>여는 태그 · 여기서부터 제목이에요</p></div>
+            <div class="row k-attr"><h3>id="title"</h3><p>속성 · 이름표예요. CSS와 JS가 이 이름으로 찾아와요</p></div>
+            <div class="row"><h3>우리 반 돌림판</h3><p>내용 · 화면에 실제로 보이는 글자</p></div>
+            <div class="row k-html"><h3>&lt;/h1&gt;</h3><p>닫는 태그 · /가 붙어요. 빠뜨리면 아래 내용까지 전부 제목이 돼요</p></div>
+          </div>
+        </div>
+        <div class="win" aria-label="태그 예시">
+          <div class="win-bar"><i></i><i></i><i></i><span>태그 하나의 생김새</span></div>
+<pre><span class="tk-tag">&lt;h1</span> <span class="tk-attr">id=</span><span class="tk-val">"title"</span><span class="tk-tag">&gt;</span><span class="tk-txt">우리 반 돌림판</span><span class="tk-tag">&lt;/h1&gt;</span>
+
+<span class="tk-cm">여는 태그 + 내용 + 닫는 태그</span>
+<span class="tk-cm">= 요소(element) 하나</span>
+
+<span class="tk-tag">&lt;input&gt;</span>  <span class="tk-cm">← 닫는 태그가 없는 요소도 있어요</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- HTML: file skeleton -->
+    <section class="slide" aria-label="HTML 뼈대">
+      <div class="inner anatomy">
+        <div>
+          <h2>HTML 파일의 뼈대</h2>
+          <div class="rows compact">
+            <div class="row"><h3>&lt;!DOCTYPE html&gt;</h3><p>이 파일은 HTML이라고 알려 줘요</p></div>
+            <div class="row"><h3>&lt;head&gt;</h3><p>화면에 안 보이는 설정<small>한글 설정, 브라우저 탭 제목, CSS</small></p></div>
+            <div class="row"><h3>&lt;body&gt;</h3><p>화면에 보이는 모든 것<small>제목, 버튼, 입력칸, 그리고 JS</small></p></div>
+            <div class="row"><h3>들여쓰기</h3><p>상자 안의 상자예요<small>안쪽 태그는 바깥 태그 안에 들어 있다는 뜻</small></p></div>
+          </div>
+        </div>
+        <div class="win" aria-label="HTML 파일 구조">
+          <div class="win-bar"><i></i><i></i><i></i><span>index.html</span></div>
+<pre><span class="tk-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tk-tag">&lt;html&gt;</span>
+  <span class="tk-tag">&lt;head&gt;</span>
+    <span class="tk-tag">&lt;meta</span> <span class="tk-attr">charset=</span><span class="tk-val">"UTF-8"</span><span class="tk-tag">&gt;</span>
+    <span class="tk-tag">&lt;title&gt;</span>돌림판<span class="tk-tag">&lt;/title&gt;</span>
+    <span class="t-css">&lt;style&gt; … &lt;/style&gt;</span>
+  <span class="tk-tag">&lt;/head&gt;</span>
+  <span class="tk-tag">&lt;body&gt;</span>
+    <span class="tk-tag">&lt;h1&gt;</span>우리 반 돌림판<span class="tk-tag">&lt;/h1&gt;</span>
+    <span class="tk-tag">&lt;button&gt;</span>돌리기<span class="tk-tag">&lt;/button&gt;</span>
+    <span class="t-js">&lt;script&gt; … &lt;/script&gt;</span>
+  <span class="tk-tag">&lt;/body&gt;</span>
+<span class="tk-tag">&lt;/html&gt;</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- HTML: common tags -->
+    <section class="slide tight" aria-label="HTML 태그">
+      <div class="inner">
+        <h2>자주 쓰는 HTML 태그</h2>
+        <div class="tscroll">
+          <table class="tweak">
+            <thead><tr><th>태그</th><th>하는 일</th><th>오늘 만들 앱에서</th></tr></thead>
+            <tbody>
+              <tr><td class="ln"><code>&lt;h1&gt;</code> ~ <code>&lt;h6&gt;</code></td><td>제목 · 숫자가 클수록 작은 제목</td><td>돌림판, 게시판 제목</td></tr>
+              <tr><td class="ln"><code>&lt;p&gt;</code></td><td>문단 · 한 덩어리 글</td><td>안내 문구</td></tr>
+              <tr><td class="ln"><code>&lt;div&gt;</code></td><td>상자 · 여러 요소를 하나로 묶기</td><td>게임 시작·결과 카드</td></tr>
+              <tr><td class="ln"><code>&lt;button&gt;</code></td><td>버튼 · 누른 뒤 할 일은 JS가 맡아요</td><td>돌리기, 글 올리기</td></tr>
+              <tr><td class="ln"><code>&lt;input&gt;</code></td><td>한 줄 입력칸</td><td>게임 기록 이름</td></tr>
+              <tr><td class="ln"><code>&lt;textarea&gt;</code></td><td>여러 줄 입력칸</td><td>돌림판 명단, 게시글 내용</td></tr>
+              <tr><td class="ln"><code>&lt;ol&gt;</code> <code>&lt;li&gt;</code></td><td>번호 목록과 그 항목</td><td>게임 랭킹</td></tr>
+              <tr><td class="ln"><code>&lt;canvas&gt;</code></td><td>JS로 그림을 그리는 도화지</td><td>돌림판 원판, 게임 화면</td></tr>
+              <tr><td class="ln"><code>&lt;img&gt;</code> <code>&lt;a&gt;</code></td><td>그림 넣기 · 다른 페이지로 가는 링크</td><td>나만의 앱에서</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CSS: one rule -->
+    <section class="slide" aria-label="CSS란">
+      <div class="inner anatomy">
+        <div>
+          <h2>CSS · 어떻게 보일지 정해요</h2>
+          <div class="rows compact map-rows">
+            <div class="row k-html"><h3>button</h3><p>누구를 · 화면의 모든 버튼</p></div>
+            <div class="row k-attr"><h3>font-size</h3><p>무엇을 · 글자 크기</p></div>
+            <div class="row k-js"><h3>32px</h3><p>얼마로 · 숫자만 바꿔도 화면이 달라져요</p></div>
+          </div>
+          <p class="note">CSS는 <b>&lt;style&gt;</b> 안에 적어요. 통째로 지워도 내용은 그대로이고, 모양만 브라우저 기본값으로 돌아가요.</p>
+        </div>
+        <div class="win" aria-label="CSS 예시">
+          <div class="win-bar"><i></i><i></i><i></i><span>CSS 규칙 하나</span></div>
+<pre><span class="t-css">&lt;style&gt;</span>
+  <span class="tk-tag">button</span> {
+    <span class="tk-attr">font-size</span>: <span class="tk-val">32px</span>;
+    <span class="tk-attr">background</span>: <span class="tk-val">#1A5FD0</span>;
+    <span class="tk-attr">color</span>: <span class="tk-val">white</span>;
+  }
+<span class="t-css">&lt;/style&gt;</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- JS: what it is -->
+    <section class="slide tight" aria-label="JavaScript란">
+      <div class="inner">
+        <h2>JavaScript · 무엇을 할지 정해요</h2>
+        <p class="def">JavaScript(JS)는 버튼을 누르거나 글을 입력했을 때 <b>무슨 일이 일어날지</b> 적는 언어예요.</p>
+        <div class="flow">
+          <div class="box b1"><b>① 가져오기</b><span>입력칸에 적힌 값을 읽어요</span></div>
+          <div class="ar" aria-hidden="true">→</div>
+          <div class="box b2"><b>② 처리하기</b><span>계산하고, 섞고, 뽑아요</span></div>
+          <div class="ar" aria-hidden="true">→</div>
+          <div class="box b3"><b>③ 보여주기</b><span>결과를 화면의 정해진 자리에 써요</span></div>
+        </div>
+        <p class="note">JS는 <b>&lt;script&gt;</b> 안에 적어요. Code.gs도 JavaScript인데, 브라우저가 아니라 <b>구글 서버</b>에서 실행돼서 스프레드시트를 다룰 수 있어요.</p>
+      </div>
+    </section>
+
+    <!-- JS: live demo -->
+    <section class="slide tight" aria-label="버튼을 누르면">
+      <div class="inner">
+        <h2>버튼을 누르면 일어나는 일</h2>
+        <div class="anatomy">
+          <div class="win sm" aria-label="인사하기 코드">
+            <div class="win-bar"><i></i><i></i><i></i><span>index.html 의 일부</span></div>
+<pre><span class="tk-tag">&lt;input</span> <span class="tk-attr">id=</span><span class="tk-val">"name"</span><span class="tk-tag">&gt;</span>
+<span class="tk-tag">&lt;button</span> <span class="tk-attr">onclick=</span><span class="tk-val">"hello()"</span><span class="tk-tag">&gt;</span>인사하기<span class="tk-tag">&lt;/button&gt;</span>
+<span class="tk-tag">&lt;p</span> <span class="tk-attr">id=</span><span class="tk-val">"result"</span><span class="tk-tag">&gt;&lt;/p&gt;</span>
+
+<span class="t-js">&lt;script&gt;</span>
+function hello() {
+  <span class="tk-cm">// ① 가져오기</span>
+  const name = document.getElementById(<span class="tk-val">'name'</span>).value;
+  <span class="tk-cm">// ② 처리하기</span>
+  const msg = name + <span class="tk-val">' 님, 안녕하세요!'</span>;
+  <span class="tk-cm">// ③ 보여주기</span>
+  document.getElementById(<span class="tk-val">'result'</span>).textContent = msg;
+}
+<span class="t-js">&lt;/script&gt;</span></pre>
+          </div>
+          <div class="try">
+            <p class="lbl">직접 해 보기 · 왼쪽 코드가 그대로 움직여요</p>
+            <input id="try-name" type="text" placeholder="이름을 적어 보세요" aria-label="이름" autocomplete="off">
+            <button type="button" id="try-btn">인사하기</button>
+            <p class="out" id="try-out" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JS: line by line -->
+    <section class="slide tight" aria-label="JS 한 줄씩">
+      <div class="inner">
+        <h2>JS 한 줄씩 읽기</h2>
+        <div class="tscroll">
+          <table class="tweak">
+            <thead><tr><th>코드</th><th>뜻</th></tr></thead>
+            <tbody>
+              <tr><td class="ln"><code>onclick="hello()"</code></td><td>버튼을 누르면 hello 함수를 실행해요</td></tr>
+              <tr><td class="ln"><code>function hello() { … }</code></td><td>함수 · 할 일을 묶어 이름을 붙인 것</td></tr>
+              <tr><td class="ln"><code>const name = …</code></td><td>변수 · 값을 name이라는 상자에 담아 둬요</td></tr>
+              <tr><td class="ln"><code>getElementById('name')</code></td><td>이름표(id)가 name인 요소를 찾아요</td></tr>
+              <tr><td class="ln"><code>.value</code></td><td>입력칸에 적힌 글자</td></tr>
+              <tr><td class="ln"><code>.textContent = msg</code></td><td>찾은 요소에 글자를 써 넣어요</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">HTML의 <b>id</b>와 JS에 적은 이름이 한 글자라도 다르면 동작하지 않아요. 가장 흔한 오류 원인이에요.</p>
+      </div>
+    </section>
+
+    <!-- Screen to code -->
+    <section class="slide tight" aria-label="어디를 고칠까">
+      <div class="inner">
+        <h2>고칠 곳은 화면이 알려 줘요</h2>
+        <div class="rows compact map-rows">
+          <div class="row k-html"><h3>HTML</h3><p>글자·버튼·입력칸이 없거나 틀렸어요<small>&lt;body&gt; 안의 태그를 봐요</small></p></div>
+          <div class="row k-css"><h3>CSS</h3><p>색·크기·배치가 이상해요<small>&lt;style&gt; 안을 봐요</small></p></div>
+          <div class="row k-js"><h3>JS</h3><p>눌러도 아무 일이 없어요<small>&lt;script&gt; 안을 봐요 · F12 콘솔의 빨간 글씨가 단서예요</small></p></div>
+          <div class="row k-store"><h3>저장</h3><p>새로고침하면 사라져요<small>저장을 맡은 Code.gs와 스프레드시트를 봐요</small></p></div>
+        </div>
+        <p class="note">AI에게 부탁할 때도 "&lt;style&gt;에서 button 글자 크기만 키워 줘"처럼 자리를 짚어 주면 다른 곳이 망가지지 않아요.</p>
+      </div>
+    </section>
+
+    <!-- Break-it lab: predict first -->
+    <section class="slide tight" aria-label="지워 보기 예측">
+      <div class="inner">
+        <h2>지우기 전에, 먼저 예측해요</h2>
+        <p class="note pg-lead">설명을 듣는 대신 한 줄을 지워 보면, 그 줄이 무슨 일을 했는지 화면이 알려 줘요. 결과를 보기 전에 옆 사람에게 예측을 말해 보세요.</p>
+        <div class="tscroll">
+          <table class="tweak" id="break-answers">
+            <thead><tr><th>영역</th><th>바꿀 곳</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td class="ln"><span class="chip k-html">HTML</span>미션 1</td><td><code>&lt;/h1&gt;</code> 지우기</td><td class="ans">제목이 끝나지 않아 아래 내용까지 크게 보여요. 오류 메시지는 없어요</td></tr>
+              <tr><td class="ln"><span class="chip k-css">CSS</span>미션 2</td><td><code>&lt;style&gt;</code> 안을 모두 지우기</td><td class="ans">내용은 그대로, 색과 크기만 브라우저 기본 모양으로 돌아가요</td></tr>
+              <tr><td class="ln"><span class="chip k-js">JS</span>미션 3</td><td><code>onclick="pick()"</code> → <code>"pic()"</code></td><td class="ans">눌러도 아무 일이 없어요. 오류 칸에 <b>pic is not defined</b></td></tr>
+              <tr><td class="ln"><span class="chip k-js">JS</span>미션 4</td><td><code>id="result"</code> → <code>id="res"</code></td><td class="ans">뽑기를 누르면 오류가 나요. JS가 찾는 이름표 result가 없어서예요</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="reveal" type="button" data-reveal="break-answers" aria-pressed="false">결과 보기</button>
+      </div>
+    </section>
+
+    <!-- Break-it lab: playground -->
+    <section class="slide tight" aria-label="직접 지워 보기">
+      <div class="inner">
+        <h2>직접 지워 보기</h2>
+        <div class="pg" data-pg>
+          <div class="pg-pane">
+            <div class="pg-bar"><span>index.html · 고치면 바로 오른쪽에 반영돼요</span><button type="button" data-pg-reset>↺ 처음 코드로</button></div>
+            <textarea class="pg-code" id="pg-src-base" spellcheck="false" aria-label="고쳐 볼 코드">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;style&gt;
+  body { font-family: sans-serif; text-align: center; padding: 16px; }
+  h1 { color: #1A5FD0; }
+  button { font-size: 20px; padding: 8px 24px; background: #1A5FD0; color: white; border: 0; border-radius: 8px; }
+  #result { font-size: 32px; font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;발표자 뽑기&lt;/h1&gt;
+&lt;textarea id="names" rows="4"&gt;민준
+서연
+지호
+하은&lt;/textarea&gt;
+&lt;br&gt;
+&lt;button onclick="pick()"&gt;뽑기&lt;/button&gt;
+&lt;p id="result"&gt;&lt;/p&gt;
+&lt;script&gt;
+function pick() {
+  const list = document.getElementById('names').value.split('\n');
+  const one = list[Math.floor(Math.random() * list.length)];
+  document.getElementById('result').textContent = one;
+}
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+          </div>
+          <div class="pg-pane">
+            <div class="pg-bar"><span>화면</span></div>
+            <iframe class="pg-view" title="코드 실행 화면" sandbox="allow-scripts"></iframe>
+            <p class="pg-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <p class="note">망가져도 괜찮아요. <b>↺ 처음 코드로</b>를 누르면 돌아와요. 미션 3·4의 빨간 오류 칸은 F12 콘솔에 나오는 내용과 같아요.</p>
       </div>
     </section>
 
@@ -1131,7 +1418,7 @@ const SPREADSHEET_ID = '';
 const SHEET_NAME = 'Board';
 
 // Time zone
-const TIME_ZONE = 'America/Bogota';
+const TIME_ZONE = 'Asia/Seoul';
 
 // ---------------------------------------------------------------
 // Open the web app
@@ -2351,6 +2638,87 @@ Code.gs와 index.html 두 개의 파일로 만들어 주세요.
     </section>
 
 
+    <!-- AI review: try the AI edit -->
+    <section class="slide tight" aria-label="AI 수정본 검증">
+      <div class="inner">
+        <h2>AI가 고친 코드, 그대로 써도 될까?</h2>
+        <p class="note pg-lead">Gemini에게 <b>"뽑기 버튼을 초록색으로 바꿔 줘"</b>라고 부탁해서 받은 코드예요. 직접 눌러 보고 원본과 비교해 보세요.</p>
+        <div class="pg" data-pg data-pg-base="pg-src-base">
+          <div class="pg-pane">
+            <div class="pg-bar"><span>index.html</span><span class="pg-tabs"><button type="button" data-pg-load="base" aria-pressed="false">원본</button><button type="button" data-pg-load="own" aria-pressed="true">AI 수정본</button></span></div>
+            <textarea class="pg-code" spellcheck="false" aria-label="AI가 고친 코드">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;style&gt;
+  body { font-family: sans-serif; text-align: center; padding: 16px; }
+  h1 { color: #188038; }
+  button { font-size: 20px; padding: 8px 24px; background: #188038; color: white; border: 0; border-radius: 8px; }
+  #result { font-size: 32px; font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;발표자 뽑기&lt;/h1&gt;
+&lt;textarea id="names" rows="4"&gt;민준
+서연
+지호
+하은&lt;/textarea&gt;
+&lt;br&gt;
+&lt;button onclick="pick()"&gt;뽑기&lt;/button&gt;
+&lt;p id="result"&gt;&lt;/p&gt;
+&lt;script&gt;
+function pick() {
+  const list = document.getElementById('names').value.split(',');
+  const one = list[Math.floor(Math.random() * list.length)];
+  document.getElementById('result').textContent = one;
+}
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+          </div>
+          <div class="pg-pane">
+            <div class="pg-bar"><span>화면</span></div>
+            <iframe class="pg-view" title="코드 실행 화면" sandbox="allow-scripts"></iframe>
+            <p class="pg-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <ol class="howto pg-check"><li><span>버튼이 초록색이 됐나요?</span></li><li><span>뽑기를 눌러 보세요. 잘 되나요?</span></li><li><span>바뀐 곳은 몇 군데일까요?</span></li></ol>
+      </div>
+    </section>
+
+    <!-- AI review: answer -->
+    <section class="slide tight" aria-label="AI 수정본 확인">
+      <div class="inner">
+        <h2>하나를 부탁했는데, 세 곳이 바뀌었어요</h2>
+        <div class="rows compact map-rows">
+          <div class="row k-css"><h3>① CSS · 부탁한 것</h3><p><code class="diff">button background: #1A5FD0 → #188038</code><small>버튼이 초록색이 됐어요 ✓</small></p></div>
+          <div class="row k-css"><h3>② CSS · 부탁 안 한 것</h3><p><code class="diff">h1 color: #1A5FD0 → #188038</code><small>제목 색도 바뀌었어요. 보기엔 괜찮지만 부탁하지 않은 변경이에요</small></p></div>
+          <div class="row k-js"><h3>③ JS · 부탁 안 한 것</h3><p><code class="diff">split('\n') → split(',')</code><small>줄마다 적은 명단을 쉼표로 나눠서, 늘 명단 전체가 한꺼번에 뽑혀요. 오류 메시지는 없어요</small></p></div>
+        </div>
+        <p class="note">찾는 순서 · 화면에서 이상한 곳 → 그 일을 맡은 영역(HTML·CSS·JS) → 원본과 줄 비교. <b>AI가 고쳐 줘도, 확인은 사람 몫이에요.</b></p>
+      </div>
+    </section>
+
+    <!-- AI review: checklist + edit-request template -->
+    <section class="slide tight" aria-label="AI 코드 확인 습관">
+      <div class="inner">
+        <h2>AI 코드를 받으면 확인할 세 가지</h2>
+        <div class="rows compact">
+          <div class="row"><h3>부탁한 것</h3><p>요청한 기능이 실제로 됐나요?</p></div>
+          <div class="row"><h3>부탁 안 한 것</h3><p>잘 되던 버튼·입력·저장이 그대로인가요?</p></div>
+          <div class="row"><h3>데이터</h3><p>시트 이름·저장 위치가 그대로인가요?<small>SHEET_NAME이 바뀌면 기록이 빈 것처럼 보여요</small></p></div>
+        </div>
+        <div class="win code">
+          <div class="win-bar"><i></i><i></i><i></i><span>Gemini · 고쳐 달라고 할 때</span><button class="copy-btn" type="button" data-target="prompt-fix" aria-live="polite">복사</button></div>
+<pre id="prompt-fix" class="wrap">아래 코드에서 [바꾸고 싶은 것]만 바꿔 주세요.
+나머지는 그대로 두고, 바꾼 줄이 어디인지 알려 주세요.
+
+[지금 코드 붙여넣기]</pre>
+        </div>
+        <p class="note">고치기 전에 지금 코드를 메모장에 복사해 두고, 배포 → <b>테스트 배포</b> 주소로 먼저 확인해요.</p>
+      </div>
+    </section>
+
     <!-- Troubleshooting -->
     <section class="slide" aria-label="막혔을 때">
       <div class="inner">
@@ -2467,6 +2835,78 @@ PCFkb2N0eXBlIGh0bWw+DQo8aHRtbCBsYW5nPSJrbyI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0
       e.preventDefault();
       var url = URL.createObjectURL(new Blob([labHtml()], { type: 'text/html' }));
       window.open(url, '_blank', 'noopener');
+    });
+  });
+
+  // ----- "버튼을 누르면" demo: runs the same hello() shown on the slide -----
+  var tryName = document.getElementById('try-name');
+  function tryHello() {
+    var name = tryName.value;
+    var msg = name + ' 님, 안녕하세요!';
+    document.getElementById('try-out').textContent = msg;
+  }
+  document.getElementById('try-btn').addEventListener('click', tryHello);
+  tryName.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { tryHello(); }
+  });
+
+  // ----- Code playgrounds ("직접 지워 보기", "AI 수정본 검증") -----
+  // Each preview gets a small hook that reports JS errors back here, so the
+  // slide can show what the F12 console would say.
+  var ERR_HOOK = '<script>window.onerror=function(m){parent.postMessage({pgErr:String(m)},"*");};<\/script>';
+  function pgDoc(code) {
+    var m = /<head[^>]*>/i.exec(code);
+    if (!m) { return ERR_HOOK + code; }
+    var at = m.index + m[0].length;
+    return code.slice(0, at) + ERR_HOOK + code.slice(at);
+  }
+  var pgs = [];
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pg]'), function (box) {
+    var ta = box.querySelector('.pg-code');
+    var view = box.querySelector('.pg-view');
+    var err = box.querySelector('.pg-err');
+    var timer = null;
+    function render() {
+      err.textContent = '';
+      view.srcdoc = pgDoc(ta.value);
+    }
+    ta.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(render, 400);
+    });
+    var reset = box.querySelector('[data-pg-reset]');
+    if (reset) {
+      reset.addEventListener('click', function () { ta.value = ta.defaultValue; render(); });
+    }
+    // 원본 / AI 수정본 tabs: "base" loads the Part 0 code, "own" this box's own code
+    var tabs = box.querySelectorAll('[data-pg-load]');
+    Array.prototype.forEach.call(tabs, function (b) {
+      b.addEventListener('click', function () {
+        var src = b.getAttribute('data-pg-load') === 'base'
+          ? document.getElementById(box.getAttribute('data-pg-base')).defaultValue
+          : ta.defaultValue;
+        ta.value = src;
+        Array.prototype.forEach.call(tabs, function (t) { t.setAttribute('aria-pressed', String(t === b)); });
+        render();
+      });
+    });
+    pgs.push({ view: view, err: err });
+    render();
+  });
+  window.addEventListener('message', function (e) {
+    if (!e.data || typeof e.data.pgErr !== 'string') { return; }
+    pgs.forEach(function (p) {
+      if (e.source === p.view.contentWindow) { p.err.textContent = '⚠ ' + e.data.pgErr; }
+    });
+  });
+
+  // "결과 보기" buttons reveal hidden answer cells
+  Array.prototype.forEach.call(document.querySelectorAll('[data-reveal]'), function (b) {
+    var target = document.getElementById(b.getAttribute('data-reveal'));
+    b.addEventListener('click', function () {
+      var on = target.classList.toggle('shown');
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = on ? '결과 숨기기' : '결과 보기';
     });
   });
 
