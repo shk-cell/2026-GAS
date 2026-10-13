@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<style>
+  :root { --accent: #D93025; --ink: #172033; --muted: #5A6577; --line: #D5DBE7; --bg: #F4F6FB; --card: #FFFFFF; --soft: #FCE8E6; --ok: #188038; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: var(--bg); color: var(--ink); }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 16px; }
+  h1 { margin: 4px 0 16px; font-size: 26px; }
+  h2 { margin: 0; font-size: 17px; }
+  .hidden { display: none !important; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #F29900; outline-offset: 2px; }
+  input, textarea { font: inherit; width: 100%; padding: 10px 14px; border: 2px solid var(--line); border-radius: 10px; background: #fff; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 96px; font-size: 20px; line-height: 1.5; }
+  .tools { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tool { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 14px; }
+  .list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .rcv { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; user-select: none; }
+  .rcv:has(input:checked) { border-color: var(--accent); background: var(--soft); }
+  .rcv input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; }
+  .rcv .nm { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .rcv .st { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .rcv .st.on { color: var(--ok); }
+  .rcv .del { flex: none; padding: 2px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 13px; }
+  .rcv .del:hover { background: #EEF1F7; }
+  .empty { color: var(--muted); }
+  .row2 { display: grid; grid-template-columns: 1fr 220px; gap: 12px; margin-top: 10px; align-items: center; }
+  .send { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .count { color: var(--muted); font-size: 14px; }
+  .btn-main { padding: 12px 30px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; font-size: 18px; font-weight: 900; }
+  .btn-main:disabled { opacity: .45; cursor: default; }
+  .msg { min-height: 1.4em; margin: 8px 0 0; font-weight: 700; color: var(--accent); }
+  .msg.ok { color: var(--ok); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; white-space: nowrap; }
+  td.text { overflow-wrap: anywhere; }
+  .acked { color: var(--ok); font-weight: 700; white-space: nowrap; }
+  .waiting { color: var(--muted); white-space: nowrap; }
+  .tscroll { overflow-x: auto; }
+  @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📢 교실 호출</h1>
+
+  <!-- Password -->
+  <section id="v-login" class="card">
+    <p class="count">관리자 비밀번호를 입력하세요.</p>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호">
+    <p><button id="btn-login" class="btn-main" type="button">들어가기</button></p>
+    <p class="msg" id="msg-login"></p>
+  </section>
+
+  <!-- Main -->
+  <section id="v-main" class="hidden">
+    <div class="card">
+      <div class="head">
+        <h2>받을 곳</h2>
+        <div class="tools">
+          <button class="tool" type="button" id="sel-on">켜진 곳 모두</button>
+          <button class="tool" type="button" id="sel-all">전체</button>
+          <button class="tool" type="button" id="sel-none">선택 해제</button>
+        </div>
+      </div>
+      <div class="list" id="receivers"></div>
+    </div>
+
+    <div class="card">
+      <h2>메시지</h2>
+      <div class="row2">
+        <textarea id="text" maxlength="200" placeholder="예: 홍길동 지금 교무실로 와라" style="grid-column: 1 / -1"></textarea>
+        <input id="from" maxlength="20" placeholder="보내는 사람 (선택)">
+        <span class="count" id="chars">0 / 200</span>
+      </div>
+      <div class="send">
+        <span class="count" id="target">받을 곳을 고르세요</span>
+        <button id="btn-send" class="btn-main" type="button" disabled>보내기</button>
+      </div>
+      <p class="msg" id="msg-send" aria-live="polite"></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:10px">보낸 메시지</h2>
+      <div class="tscroll">
+        <table>
+          <thead><tr><th>시간</th><th>받는 곳</th><th>메시지</th><th>보낸 사람</th><th>확인</th></tr></thead>
+          <tbody id="recent"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const REFRESH_MS = 5000;
+
+let password = '';
+let receivers = [];
+const picked = new Set();   // names checked by the admin, kept across refreshes
+
+function $(id) { return document.getElementById(id); }
+
+function call(fn) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  return new Promise(function (resolve, reject) {
+    const run = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+    run[fn].apply(run, args);
+  });
+}
+
+function errText(e) {
+  return (e && e.message ? e.message : String(e)).replace(/^Error:\s*/, '');
+}
+
+// ----- Login -----
+
+async function login(pw) {
+  $('msg-login').textContent = '';
+  try {
+    const r = await call('loadAdmin', pw);
+    password = pw;
+    try { sessionStorage.setItem('call_pw', pw); } catch (e) {}
+    $('v-login').classList.add('hidden');
+    $('v-main').classList.remove('hidden');
+    apply(r);
+    setTimeout(refreshLoop, REFRESH_MS);
+  } catch (e) {
+    $('msg-login').textContent = errText(e);
+  }
+}
+
+$('btn-login').addEventListener('click', function () { login($('pw').value); });
+$('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') login($('pw').value); });
+
+function apply(r) {
+  receivers = r.receivers;
+  // Forget picks for receivers that were removed
+  Array.from(picked).forEach(function (n) {
+    if (!receivers.some(function (x) { return x.name === n; })) picked.delete(n);
+  });
+  renderReceivers();
+  renderRecent(r.recent);
+  updateSend();
+}
+
+async function refreshLoop() {
+  try { apply(await call('loadAdmin', password)); } catch (e) {}
+  setTimeout(refreshLoop, REFRESH_MS);
+}
+
+// ----- Receivers -----
+
+function renderReceivers() {
+  const box = $('receivers');
+  box.innerHTML = '';
+  if (!receivers.length) {
+    box.innerHTML = '<p class="empty">아직 접속한 수신기가 없어요. 교실 컴퓨터에서 수신기를 켜면 여기에 나타나요.</p>';
+    return;
+  }
+  receivers.forEach(function (r) {
+    const label = document.createElement('label');
+    label.className = 'rcv';
+    const box1 = document.createElement('input');
+    box1.type = 'checkbox';
+    box1.checked = picked.has(r.name);
+    box1.addEventListener('change', function () {
+      if (box1.checked) picked.add(r.name); else picked.delete(r.name);
+      updateSend();
+    });
+    const nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = r.name;
+    const st = document.createElement('span');
+    st.className = 'st' + (r.online ? ' on' : '');
+    st.textContent = r.online ? '🟢 켜짐' : '⚪ 꺼짐' + (r.seen ? ' · 마지막 ' + r.seen : '');
+    nm.appendChild(st);
+    label.appendChild(box1);
+    label.appendChild(nm);
+    if (!r.online) {
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del';
+      del.textContent = '지우기';
+      del.title = '목록에서 지우기 (다시 켜지면 돌아와요)';
+      del.addEventListener('click', async function (e) {
+        e.preventDefault();
+        if (!confirm(r.name + ' 을(를) 목록에서 지울까요?')) return;
+        try { apply(await call('removeReceiver', password, r.name)); } catch (err) { $('msg-send').textContent = errText(err); }
+      });
+      label.appendChild(del);
+    }
+    box.appendChild(label);
+  });
+}
+
+function pickWhere(test) {
+  picked.clear();
+  receivers.forEach(function (r) { if (test(r)) picked.add(r.name); });
+  renderReceivers();
+  updateSend();
+}
+$('sel-on').addEventListener('click', function () { pickWhere(function (r) { return r.online; }); });
+$('sel-all').addEventListener('click', function () { pickWhere(function () { return true; }); });
+$('sel-none').addEventListener('click', function () { pickWhere(function () { return false; }); });
+
+// ----- Send -----
+
+function updateSend() {
+  const n = picked.size;
+  const off = receivers.filter(function (r) { return picked.has(r.name) && !r.online; }).length;
+  $('target').textContent = n
+    ? n + '곳에 보내요' + (off ? ' (그중 ' + off + '곳은 꺼져 있어요. 10분 안에 켜지면 받아요)' : '')
+    : '받을 곳을 고르세요';
+  $('chars').textContent = $('text').value.length + ' / 200';
+  $('btn-send').disabled = !n || !$('text').value.trim();
+}
+
+$('text').addEventListener('input', updateSend);
+$('text').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !$('btn-send').disabled) $('btn-send').click();
+});
+$('from').addEventListener('input', function () {
+  try { localStorage.setItem('call_from', $('from').value); } catch (e) {}
+});
+
+$('btn-send').addEventListener('click', async function () {
+  $('btn-send').disabled = true;
+  $('msg-send').className = 'msg';
+  $('msg-send').textContent = '보내는 중…';
+  try {
+    const r = await call('sendMessage', password, { to: Array.from(picked), text: $('text').value, from: $('from').value });
+    $('msg-send').className = 'msg ok';
+    $('msg-send').textContent = '보냈어요. 켜진 곳에는 5초 안에 떠요.';
+    $('text').value = '';
+    apply(r);
+  } catch (e) {
+    $('msg-send').textContent = errText(e);
+    updateSend();
+  }
+});
+
+// ----- Sent messages -----
+
+function renderRecent(list) {
+  const body = $('recent');
+  body.innerHTML = '';
+  if (!list.length) {
+    body.innerHTML = '<tr><td colspan="5" class="waiting">아직 보낸 메시지가 없어요.</td></tr>';
+    return;
+  }
+  list.forEach(function (m) {
+    const tr = document.createElement('tr');
+    [[m.time.slice(11, 16)], [m.to], [m.text, 'text'], [m.from]].forEach(function (v) {
+      const td = document.createElement('td');
+      td.textContent = v[0];
+      if (v[1]) td.className = v[1];
+      tr.appendChild(td);
+    });
+    const ack = document.createElement('td');
+    ack.className = m.ack ? 'acked' : 'waiting';
+    ack.textContent = m.ack ? '✓ ' + m.ack.slice(0, 5) : '대기 중';
+    tr.appendChild(ack);
+    body.appendChild(tr);
+  });
+}
+
+// ----- Start -----
+
+try { $('from').value = localStorage.getItem('call_from') || ''; } catch (e) {}
+if (typeof google === 'undefined' || !google.script) {
+  $('msg-login').textContent = '이 파일은 Apps Script 웹 앱으로 배포한 주소에서 열어야 동작해요.';
+} else {
+  let saved = '';
+  try { saved = sessionStorage.getItem('call_pw') || ''; } catch (e) {}
+  if (saved) login(saved);
+}
+</script>
+</body>
+</html>
