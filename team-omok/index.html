@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<style>
+  :root {
+    --red: #D93025; --blue: #1A73E8; --ink: #172033; --muted: #5A6577;
+    --line: #D5DBE7; --bg: #F4F6FB; --card: #FFFFFF; --wood: #E9C98E; --grid: #6B4E2A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: var(--bg); color: var(--ink); }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { margin: 4px 0 14px; font-size: 26px; }
+  h1 small { font-size: 15px; color: var(--muted); font-weight: 500; margin-left: 8px; }
+  .hidden { display: none !important; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  button { font: inherit; font-weight: 700; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer; }
+  button:disabled { opacity: .45; cursor: default; }
+  button:focus-visible, input:focus-visible { outline: 3px solid #F29900; outline-offset: 2px; }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-main { background: var(--ink); color: #fff; }
+  input { font: inherit; width: 100%; max-width: 360px; padding: 10px 14px; border: 2px solid var(--line); border-radius: 10px; }
+  .msg { min-height: 1.4em; margin: 8px 0 0; color: var(--red); font-weight: 700; }
+  .hint { color: var(--muted); }
+
+  /* Teams */
+  .teams { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .team { background: var(--card); border: 3px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .team.red { border-color: var(--red); }
+  .team.blue { border-color: var(--blue); }
+  .team h2 { margin: 0 0 8px; font-size: 20px; }
+  .team.red h2 { color: var(--red); }
+  .team.blue h2 { color: var(--blue); }
+  .team ol, .bench ul { margin: 0 0 10px; padding-left: 1.4em; min-height: 1.6em; }
+  .team li, .bench li { margin: 4px 0; }
+  .me { font-weight: 900; }
+  .away { color: var(--muted); }
+  .now { background: #FFF1B8; border-radius: 6px; padding: 0 6px; }
+
+  /* Game */
+  .game { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 16px; align-items: start; }
+  .status { margin: 0 0 10px; padding: 8px 14px; border-radius: 10px; font-size: 19px; font-weight: 900; background: var(--card); border: 2px solid var(--line); }
+  .status.mine { color: #fff; border-color: transparent; background: var(--turn); animation: pulse 1s ease-in-out infinite alternate; }
+  .board { display: grid; grid-template-columns: repeat(15, 1fr); width: min(100%, 640px); aspect-ratio: 1; padding: 1.6%; background: var(--wood); border-radius: 8px; box-shadow: 0 5px 0 #B8925A; touch-action: manipulation; }
+  .cell { position: relative; aspect-ratio: 1; padding: 0; border-radius: 0; background: transparent; }
+  .cell:disabled { opacity: 1; cursor: default; }
+  .cell::before, .cell::after { content: ""; position: absolute; background: var(--grid); pointer-events: none; }
+  .cell::before { left: 0; right: 0; top: 50%; height: 1px; }
+  .cell::after { top: 0; bottom: 0; left: 50%; width: 1px; }
+  .cell.l::before { left: 50%; }
+  .cell.r::before { right: 50%; }
+  .cell.t::after { top: 50%; }
+  .cell.b::after { bottom: 50%; }
+  .board.myturn .cell:not(:disabled):hover { background: rgba(255, 255, 255, .35); border-radius: 50%; }
+  .stone { position: absolute; inset: 7%; z-index: 1; border-radius: 50%; box-shadow: inset -2px -3px 5px rgba(0, 0, 0, .3); }
+  .stone.R { background: var(--red); }
+  .stone.B { background: var(--blue); }
+  .stone.last { outline: 3px solid #FDD663; outline-offset: 1px; }
+  .stone.win { outline: 3px solid #fff; animation: pulse .7s ease-in-out infinite alternate; }
+  .stone.pending { opacity: .5; }
+  .ban-mark { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; color: var(--red); font-weight: 900; font-size: min(3.2vw, 26px); line-height: 1; pointer-events: none; }
+  .rule { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+  .side .team { margin-bottom: 10px; }
+  @keyframes pulse { from { filter: brightness(1); } to { filter: brightness(1.25); } }
+  @media (max-width: 720px) {
+    .game { grid-template-columns: minmax(0, 1fr); }
+    .teams { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status.mine, .stone.win { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>팀 오목 <small id="phase-tag"></small></h1>
+
+  <!-- Shown until the first answer from the server arrives -->
+  <section id="v-conn" class="card">
+    <p id="conn-text">서버에 연결하는 중…</p>
+    <p class="msg" id="conn-err"></p>
+  </section>
+
+  <!-- Name screen -->
+  <section id="v-join" class="card hidden">
+    <p>이름을 적고 들어가세요.</p>
+    <input id="name" maxlength="12" placeholder="이름 (12자까지)" autocomplete="off">
+    <p><button id="btn-join" class="btn-main" type="button">입장하기</button></p>
+    <p class="msg" id="msg-join"></p>
+  </section>
+
+  <!-- Lobby -->
+  <section id="v-lobby" class="hidden">
+    <div class="teams">
+      <div class="team red">
+        <h2>🔴 레드 팀</h2>
+        <ol id="lobby-red"></ol>
+        <button class="btn-red" type="button" data-team="red">레드 팀으로</button>
+      </div>
+      <div class="team blue">
+        <h2>🔵 블루 팀</h2>
+        <ol id="lobby-blue"></ol>
+        <button class="btn-blue" type="button" data-team="blue">블루 팀으로</button>
+      </div>
+    </div>
+    <div class="card bench">
+      <b>아직 팀을 고르지 않은 사람</b>
+      <ul id="lobby-none"></ul>
+    </div>
+    <p><button id="btn-start" class="btn-main hidden" type="button">게임 시작</button> <span id="start-hint" class="hint"></span></p>
+    <p class="msg" id="msg-lobby"></p>
+  </section>
+
+  <!-- Game -->
+  <section id="v-game" class="hidden">
+    <div class="game">
+      <div>
+        <p id="status" class="status"></p>
+        <div id="board" class="board" role="grid" aria-label="오목판"></div>
+        <p class="rule">다섯 개 이상 이으면 승리 · <b style="color: var(--red)">×</b> 는 삼삼(3-3) 금지 자리예요</p>
+        <p class="msg" id="msg-game"></p>
+      </div>
+      <aside class="side">
+        <div class="team red"><h2>🔴 레드</h2><ol id="game-red"></ol></div>
+        <div class="team blue"><h2>🔵 블루</h2><ol id="game-blue"></ol></div>
+        <div id="join-mid" class="card hidden">
+          <p class="hint">관전 중이에요. 팀에 들어가면 그 팀 순서의 맨 뒤에 붙어요.</p>
+          <button class="btn-red" type="button" data-team="red">레드로</button>
+          <button class="btn-blue" type="button" data-team="blue">블루로</button>
+        </div>
+        <p><button id="btn-lobby" class="btn-main hidden" type="button"></button></p>
+      </aside>
+    </div>
+  </section>
+</div>
+
+<script>
+// How often every player asks the server for the latest board (ms).
+const POLL_MS = 1500;
+const TEAM_NAME = { red: '🔴 레드', blue: '🔵 블루' };
+
+const key = loadKey();
+let S = null;        // latest state from the server
+let pending = -1;    // the cell I just clicked, shown faded until the server answers
+
+// A secret per browser, kept so a refresh keeps you in the same seat.
+function loadKey() {
+  let k = null;
+  try { k = localStorage.getItem('omok_key'); } catch (e) {}
+  if (!k || !/^[A-Za-z0-9]{20}$/.test(k)) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const buf = new Uint32Array(20);
+    crypto.getRandomValues(buf);
+    k = Array.from(buf, function (n) { return chars[n % chars.length]; }).join('');
+    try { localStorage.setItem('omok_key', k); } catch (e) {}
+  }
+  return k;
+}
+
+function call(fn) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  return new Promise(function (resolve, reject) {
+    const run = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+    run[fn].apply(run, args);
+  });
+}
+
+// Send an action (join, setTeam, start, place, toLobby) and show the result.
+async function act(msgId, fn) {
+  const args = Array.prototype.slice.call(arguments, 2);
+  document.getElementById(msgId).textContent = '';
+  try {
+    const r = await call.apply(null, [fn, key].concat(args));
+    if (r.error) document.getElementById(msgId).textContent = r.error;
+    apply(r.state);
+  } catch (e) {
+    document.getElementById(msgId).textContent = '연결이 잠깐 끊겼어요. 다시 해 보세요.';
+  } finally {
+    if (fn === 'place') { pending = -1; render(); }
+  }
+}
+
+let failures = 0;
+async function pollLoop() {
+  try {
+    const r = await call('poll', key);
+    failures = 0;
+    document.getElementById('conn-err').textContent = '';
+    apply(r.state);
+  } catch (e) {
+    // Keep retrying; say why if it keeps failing (or before the first answer).
+    failures++;
+    if (!S || failures >= 3) showConnError(e);
+  }
+  setTimeout(pollLoop, POLL_MS);
+}
+
+function showConnError(e) {
+  show('conn');
+  document.getElementById('conn-text').textContent = '서버와 연결되지 않았어요. 자동으로 다시 시도하는 중이에요.';
+  document.getElementById('conn-err').textContent = '오류: ' + (e && e.message ? e.message : e);
+}
+
+// Ignore answers older than what is already on screen.
+function apply(st) {
+  if (S && st.v < S.v) return;
+  S = st;
+  render();
+}
+
+function player(id) {
+  return S.players.find(function (p) { return p.id === id; });
+}
+
+function show(view) {
+  ['conn', 'join', 'lobby', 'game'].forEach(function (v) {
+    document.getElementById('v-' + v).classList.toggle('hidden', v !== view);
+  });
+}
+
+function personLi(p, isNow) {
+  const li = document.createElement('li');
+  li.textContent = (isNow ? '▶ ' : '') + p.name + (p.id === S.host ? ' 👑' : '') +
+    (p.id === S.me ? ' (나)' : '') + (p.away ? ' · 자리 비움' : '');
+  if (p.id === S.me) li.classList.add('me');
+  if (p.away) li.classList.add('away');
+  if (isNow) li.classList.add('now');
+  return li;
+}
+
+function fillList(id, people, nowId) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  people.forEach(function (p) { el.appendChild(personLi(p, p.id === nowId)); });
+}
+
+function render() {
+  if (!S) return;
+  const me = player(S.me);
+  const tag = { lobby: '· 로비', playing: '· 게임 중', over: '· 게임 끝' }[S.phase];
+  document.getElementById('phase-tag').textContent = me ? tag : '';
+  if (!me) {
+    show('join');
+    return;
+  }
+  if (S.phase === 'lobby') {
+    show('lobby');
+    renderLobby(me);
+  } else {
+    show('game');
+    renderGame(me);
+  }
+}
+
+function renderLobby(me) {
+  ['red', 'blue'].forEach(function (t) {
+    fillList('lobby-' + t, S.players.filter(function (p) { return p.team === t; }));
+  });
+  fillList('lobby-none', S.players.filter(function (p) { return !p.team; }));
+  document.querySelectorAll('#v-lobby [data-team]').forEach(function (b) {
+    b.disabled = me.team === b.getAttribute('data-team');
+  });
+
+  const ready = ['red', 'blue'].every(function (t) {
+    return S.players.some(function (p) { return p.team === t && !p.away; });
+  });
+  const isHost = S.host === S.me;
+  const startBtn = document.getElementById('btn-start');
+  startBtn.classList.toggle('hidden', !isHost);
+  startBtn.disabled = !ready;
+  const host = player(S.host);
+  document.getElementById('start-hint').textContent = isHost
+    ? (ready ? '모두 팀을 골랐으면 시작하세요.' : '레드와 블루에 한 명 이상씩 있어야 시작할 수 있어요.')
+    : '방장' + (host ? '(' + host.name + ')' : '') + '이 시작하면 게임이 시작돼요.';
+}
+
+function renderGame(me) {
+  ['red', 'blue'].forEach(function (t) {
+    const people = S.order[t].map(player).filter(Boolean);
+    fillList('game-' + t, people, S.phase === 'playing' && S.turn === t ? S.current : null);
+  });
+
+  // Status line
+  const status = document.getElementById('status');
+  const cur = player(S.current);
+  const myTurn = S.phase === 'playing' && S.current === S.me;
+  status.classList.toggle('mine', myTurn);
+  status.style.setProperty('--turn', S.turn === 'red' ? 'var(--red)' : 'var(--blue)');
+  if (S.phase === 'over') {
+    status.textContent = S.winner === 'draw' ? '무승부예요!' : TEAM_NAME[S.winner] + ' 팀 승리! 🎉';
+  } else if (myTurn) {
+    status.textContent = '내 차례예요! 돌을 두세요';
+  } else if (!cur) {
+    status.textContent = TEAM_NAME[S.turn] + ' 팀에 접속한 사람이 없어요';
+  } else if (me.team === S.turn) {
+    status.textContent = '우리 팀 차례 · ' + cur.name + ' 님이 둘 차례예요';
+  } else {
+    status.textContent = TEAM_NAME[S.turn] + ' 팀 차례 · ' + cur.name + ' 님이 두고 있어요';
+  }
+
+  renderBoard(myTurn);
+
+  document.getElementById('join-mid').classList.toggle('hidden', !(S.phase === 'playing' && !me.team));
+  const lobbyBtn = document.getElementById('btn-lobby');
+  lobbyBtn.classList.toggle('hidden', S.host !== S.me);
+  lobbyBtn.textContent = S.phase === 'over' ? '로비로 돌아가기' : '게임 그만하고 로비로';
+}
+
+function renderBoard(myTurn) {
+  const n = S.size;
+  const board = document.getElementById('board');
+  board.classList.toggle('myturn', myTurn && pending < 0);
+  board.innerHTML = '';
+  for (let i = 0; i < n * n; i++) {
+    const r = Math.floor(i / n);
+    const c = i % n;
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'cell' + (c === 0 ? ' l' : '') + (c === n - 1 ? ' r' : '') +
+      (r === 0 ? ' t' : '') + (r === n - 1 ? ' b' : '');
+    const ch = i === pending ? (S.turn === 'red' ? 'R' : 'B') : S.board[i];
+    if (ch !== '.') {
+      const stone = document.createElement('span');
+      stone.className = 'stone ' + ch + (i === S.last ? ' last' : '') +
+        (S.line.indexOf(i) >= 0 ? ' win' : '') + (i === pending ? ' pending' : '');
+      cell.appendChild(stone);
+    }
+    // 3-3 cells for the team to move, shown to everyone
+    const banned = ch === '.' && pending < 0 && S.ban.indexOf(i) >= 0;
+    if (banned) {
+      const mark = document.createElement('span');
+      mark.className = 'ban-mark';
+      mark.textContent = '×';
+      cell.appendChild(mark);
+    }
+    cell.setAttribute('aria-label', (r + 1) + '행 ' + (c + 1) + '열' +
+      (ch === 'R' ? ' 레드 돌' : ch === 'B' ? ' 블루 돌' : banned ? ' 삼삼 금지' : ''));
+    cell.disabled = !(myTurn && pending < 0 && ch === '.' && !banned);
+    cell.dataset.i = i;
+    board.appendChild(cell);
+  }
+}
+
+// ----- Buttons -----
+
+document.getElementById('btn-join').addEventListener('click', function () {
+  const name = document.getElementById('name').value;
+  try { localStorage.setItem('omok_name', name); } catch (e) {}
+  act('msg-join', 'join', name);
+});
+document.getElementById('name').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') document.getElementById('btn-join').click();
+});
+document.querySelectorAll('[data-team]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    const msg = S && S.phase === 'lobby' ? 'msg-lobby' : 'msg-game';
+    act(msg, 'setTeam', b.getAttribute('data-team'));
+  });
+});
+document.getElementById('btn-start').addEventListener('click', function () {
+  act('msg-lobby', 'start');
+});
+document.getElementById('btn-lobby').addEventListener('click', function () {
+  if (S.phase === 'playing' && !confirm('게임을 그만하고 모두 로비로 돌아갈까요?')) return;
+  act('msg-game', 'toLobby');
+});
+document.getElementById('board').addEventListener('click', function (e) {
+  const cell = e.target.closest('.cell');
+  if (!cell || cell.disabled) return;
+  pending = Number(cell.dataset.i);
+  render();
+  act('msg-game', 'place', pending);
+});
+
+try { document.getElementById('name').value = localStorage.getItem('omok_name') || ''; } catch (e) {}
+
+// google.script.run only exists when the page is served by the deployed web app.
+if (typeof google === 'undefined' || !google.script) {
+  document.getElementById('conn-text').textContent =
+    '이 파일은 Apps Script 웹 앱으로 배포한 주소에서 열어야 동작해요.';
+  document.getElementById('conn-err').textContent =
+    '배포 → 새 배포 → 웹 앱 → 나온 주소(…/exec)로 들어오세요.';
+} else {
+  pollLoop();
+}
+</script>
+</body>
+</html>
