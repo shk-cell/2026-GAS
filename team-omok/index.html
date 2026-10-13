@@ -149,16 +149,18 @@ const key = loadKey();
 let S = null;        // latest state from the server
 let pending = -1;    // the cell I just clicked, shown faded until the server answers
 
-// A secret per browser, kept so a refresh keeps you in the same seat.
+// A secret per tab: sessionStorage survives a refresh (you keep your seat) but is
+// not shared between tabs or windows, so every tab is a separate player. Guest and
+// incognito windows share localStorage with each other, which is why it is not used here.
 function loadKey() {
   let k = null;
-  try { k = localStorage.getItem('omok_key'); } catch (e) {}
+  try { k = sessionStorage.getItem('omok_key'); } catch (e) {}
   if (!k || !/^[A-Za-z0-9]{20}$/.test(k)) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const buf = new Uint32Array(20);
     crypto.getRandomValues(buf);
     k = Array.from(buf, function (n) { return chars[n % chars.length]; }).join('');
-    try { localStorage.setItem('omok_key', k); } catch (e) {}
+    try { sessionStorage.setItem('omok_key', k); } catch (e) {}
   }
   return k;
 }
