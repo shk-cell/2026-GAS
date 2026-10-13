@@ -519,6 +519,8 @@
   .ex-sum { margin: 4px 0 8px; color: var(--muted); font-size: clamp(14px, 1.4vw, 17px); line-height: 1.45; word-break: keep-all; }
   .ex ul { margin: 0 0 10px; padding-left: 1.1em; font-size: clamp(14px, 1.4vw, 17px); line-height: 1.6; }
   .ex-tech { margin: auto 0 0; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); font-size: clamp(12px, 1.2vw, 14px); font-family: var(--mono); }
+  .ex-link { align-self: flex-start; margin-top: 10px; padding: 6px 14px; border-radius: 999px; background: var(--accent); color: var(--stage); font-weight: 700; font-size: clamp(13px, 1.3vw, 15px); text-decoration: none; }
+  .ex-link:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 3px; }
   .omok { display: grid; grid-template-columns: repeat(7, 1fr); width: clamp(90px, 15vh, 130px); aspect-ratio: 1; padding: 4px; background: #E9C98E; border-radius: 6px; box-shadow: 0 3px 0 #B8925A; }
   .omok i { position: relative; display: block; }
   .omok i::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #6B4E2A; }
@@ -531,6 +533,15 @@
   .call b { font-size: clamp(14px, 1.6vw, 18px); line-height: 1.3; word-break: keep-all; }
   .call-ok { padding: 2px 16px; border-radius: 4px; background: #fff; color: #D93025; font-size: 12px; font-weight: 700; }
   @media (max-width: 720px) { .ex-grid { grid-template-columns: minmax(0, 1fr); } }
+  .link-flow { margin-bottom: clamp(12px, 2vh, 20px); }
+  .link-flow .box { padding: clamp(10px, 1.6vw, 18px); }
+  .link-flow .box b { font-size: clamp(17px, 2vw, 26px); }
+  .link-flow .box span { font-size: clamp(13px, 1.4vw, 17px); line-height: 1.45; }
+  .link-flow .box small { font-family: var(--mono); font-size: .85em; }
+  .link-detail { align-items: start; }
+  .link-detail .rows.compact .row { grid-template-columns: minmax(0, 5.5em) minmax(0, 1fr); }
+  .link-detail .rows.compact .row h3 { white-space: nowrap; }
+  .link-detail .win pre { font-size: clamp(12px, 1.15vw, 15px); line-height: 1.6; }
 
   /* Code playground: editable code on the left, live preview on the right */
   .pg { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(10px, 1.6vw, 18px); }
@@ -2690,6 +2701,7 @@ function buildRanking_(playerName) {
                 <li>삼삼(3-3) 금지 자리 표시</li>
               </ul>
               <p class="ex-tech">Apps Script + 캐시 · 1.5초마다 판을 맞춰요</p>
+              <a class="ex-link" href="https://script.google.com/macros/s/AKfycbyqMkc_Gz5AvbPj45U9QZQjMI8TBAq3ZxbupN6ZmYwfdinIMaHTx_a0q0IiSwid3cP_Wg/exec" target="_blank" rel="noopener">▶ 바로 해 보기</a>
             </div>
           </article>
           <article class="ex">
@@ -2713,6 +2725,51 @@ function buildRanking_(playerName) {
           </article>
         </div>
         <p class="note">둘 다 오늘 만든 것과 같은 Code.gs + index.html 구조예요. 아이디어만 있으면 AI와 함께 이렇게 키울 수 있어요.</p>
+      </div>
+    </section>
+
+    <!-- GAS + a Windows program (1/2): the structure, using 교실 호출 as the example -->
+    <section class="slide tight" aria-label="GAS와 프로그램 연동">
+      <div class="inner">
+        <h2>GAS는 웹앱만이 아니에요 · 윈도우 프로그램과 연동</h2>
+        <p class="note pg-lead">예시 · <b>교실 호출</b>은 GAS 웹앱과 교실 PC의 윈도우 프로그램(Receiver.exe)을 이어서 만들었어요.</p>
+        <div class="flow link-flow">
+          <div class="box b1"><b>관리자 웹앱</b><span>교실을 고르고 메시지를 보내요<br><small>index.html</small></span></div>
+          <div class="ar" aria-hidden="true">→</div>
+          <div class="box b2"><b>GAS = 우편함</b><span>교실별로 메시지를 맡아 둬요<br><small>Code.gs</small></span></div>
+          <div class="ar" aria-hidden="true">⇄</div>
+          <div class="box b3"><b>교실 PC 프로그램</b><span>5초마다 "우리 반 거 있어요?"<br><small>Receiver.exe</small></span></div>
+        </div>
+        <div class="rows compact">
+          <div class="row"><h3>두 가지 역할</h3><p>GAS 웹앱 주소는 사람에게는 화면을, 프로그램에게는 데이터를 줘요<small>주소 뒤에 ?mode=poll 을 붙이면 화면 대신 글자(JSON)로 답해요</small></p></div>
+          <div class="row"><h3>묻는 이유</h3><p>GAS는 교실 PC에 먼저 연락할 수 없어요<small>그래서 프로그램이 5초마다 물어봐요. 팀 오목도 같은 원리예요</small></p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAS + a Windows program (2/2): what they exchange, and other ideas -->
+    <section class="slide tight" aria-label="GAS와 프로그램이 주고받는 내용">
+      <div class="inner">
+        <h2>프로그램과 GAS는 이렇게 주고받아요</h2>
+        <div class="anatomy link-detail">
+          <div class="win" aria-label="프로그램과 GAS가 주고받는 내용">
+            <div class="win-bar"><i></i><i></i><i></i><span>Receiver.exe ⇄ GAS</span></div>
+<pre><span class="tk-cm">// ① 프로그램이 웹앱 주소로 물어봐요</span>
+<span class="tk-tag">GET</span> …/exec?<span class="tk-attr">mode</span>=<span class="tk-val">poll</span>&amp;<span class="tk-attr">name</span>=<span class="tk-val">컴퓨터실</span>
+
+<span class="tk-cm">// ② GAS(doGet)가 글자(JSON)로 답해요</span>
+{ "messages": [ {
+    "text": <span class="tk-val">"홍길동 지금 교무실로 와라"</span>,
+    "from": <span class="tk-val">"교무부"</span> } ] }
+
+<span class="tk-cm">// ③ 프로그램이 맨 앞에 빨간 창 + 음성</span></pre>
+          </div>
+          <div class="rows compact">
+            <div class="row"><h3>종류</h3><p>주소로 요청하고 답을 읽을 수 있으면 돼요<small>C#, 파이썬, 엑셀 매크로, Wi-Fi 아두이노</small></p></div>
+            <div class="row"><h3>응용</h3><p>교실 알림판, 급식실 대기 전광판, 과학실 센서 기록</p></div>
+            <div class="row"><h3>만들 때</h3><p>Gemini에게 "GAS 웹앱과 통신하는 프로그램"이라고 구체적으로 부탁해요</p></div>
+          </div>
+        </div>
       </div>
     </section>
 
