@@ -13,8 +13,7 @@
 const SIZE = 15;               // 15 x 15 board
 const STATE_KEY = 'omok_state';
 const CACHE_TTL = 21600;       // 6 hours, the CacheService maximum
-const ACTIVE_MS = 20000;       // no poll for 20 s -> shown as away, turn is skipped
-const DROP_MS = 60000;         // away for 60 s in the lobby -> removed from the list
+const LEAVE_MS = 10000;        // no poll for 10 s -> the player has left and is removed
 const BAN_33 = true;           // false = allow 3-3 (double three)
 
 function doGet() {
@@ -30,19 +29,39 @@ function resetRoom() {
 
 // ----- Called from index.html -----
 
-// Read-only, so no lock: this runs for every player every 1.5 s.
+// Runs for every player every 1.5 s, so normally it only reads, with no lock.
+// Only when someone has gone quiet does it take the lock and remove them.
 function poll(key) {
   const me = pid_(key);
   touch_(me);
-  const st = load_();
-  return { state: view_(st, me, seenMap_(st)) };
+  let st = load_();
+  let age = seenMap_(st);
+  if (hasLeft_(st, age, me)) {
+    const lock = LockService.getScriptLock();
+    if (lock.tryLock(1000)) {
+      try {
+        st = load_();
+        age = seenMap_(st);
+        if (purge_(st, age, me)) save_(st, age);
+      } finally {
+        lock.releaseLock();
+      }
+    }
+  }
+  return { state: view_(st, me, age) };
+}
+
+// The "나가기" button.
+function leave(key) {
+  return mutate_(key, function (st, me) {
+    if (st.players[me]) removePlayer_(st, me);
+  });
 }
 
 function join(key, name) {
-  return mutate_(key, function (st, me, age) {
+  return mutate_(key, function (st, me) {
     name = String(name || '').trim().slice(0, 12);
     if (!name) return '이름을 적어 주세요.';
-    if (st.phase === 'lobby') purge_(st, age, me);
     const p = st.players[me];
     if (p) {
       p.name = name;
@@ -70,11 +89,10 @@ function start(key) {
   return mutate_(key, function (st, me, age) {
     if (host_(st, age) !== me) return '방장만 시작할 수 있어요.';
     if (st.phase === 'playing') return '이미 게임 중이에요.';
-    purge_(st, age, me);
     const byJoin = function (a, b) { return st.players[a].joined - st.players[b].joined; };
-    const active = Object.keys(st.players).filter(function (id) { return age[id] < ACTIVE_MS; });
-    const red = active.filter(function (id) { return st.players[id].team === 'red'; }).sort(byJoin);
-    const blue = active.filter(function (id) { return st.players[id].team === 'blue'; }).sort(byJoin);
+    const ids = Object.keys(st.players);
+    const red = ids.filter(function (id) { return st.players[id].team === 'red'; }).sort(byJoin);
+    const blue = ids.filter(function (id) { return st.players[id].team === 'blue'; }).sort(byJoin);
     if (!red.length || !blue.length) return '레드와 블루에 한 명 이상씩 있어야 해요.';
     resetBoard_(st);
     st.order = { red: red, blue: blue };
@@ -142,6 +160,7 @@ function resetBoard_(st) {
   st.winner = null;
   st.line = [];
   st.ban = [];       // cells the team to move may not play (3-3)
+  st.forfeit = false; // true when the game ended because a whole team left
 }
 
 function cache_() {
@@ -153,7 +172,15 @@ function load_() {
   return raw ? JSON.parse(raw) : newState_();
 }
 
+// Call only while holding the lock.
+function save_(st, age) {
+  st.hostId = host_(st, age);
+  st.v++;
+  cache_().put(STATE_KEY, JSON.stringify(st), CACHE_TTL);
+}
+
 // Every change goes through here: one lock, one load, one save.
+// Players who have left are removed first, so every action sees who is really here.
 function mutate_(key, change) {
   const me = pid_(key);
   const lock = LockService.getScriptLock();
@@ -162,11 +189,10 @@ function mutate_(key, change) {
     touch_(me);
     const st = load_();
     const age = seenMap_(st);
+    purge_(st, age, me);
     const error = change(st, me, age);
     if (error) return { error: error, state: view_(st, me, age) };
-    st.hostId = host_(st, age);
-    st.v++;
-    cache_().put(STATE_KEY, JSON.stringify(st), CACHE_TTL);
+    save_(st, age);
     return { state: view_(st, me, age) };
   } finally {
     lock.releaseLock();
@@ -199,27 +225,65 @@ function seenMap_(st) {
   return age;
 }
 
-function purge_(st, age, me) {
-  Object.keys(st.players).forEach(function (id) {
-    if (id !== me && !(age[id] < DROP_MS)) delete st.players[id];
-  });
+function here_(age, id) {
+  return age[id] < LEAVE_MS;
 }
 
-// The host is the saved host while active, otherwise the earliest active player.
+function hasLeft_(st, age, me) {
+  return Object.keys(st.players).some(function (id) { return id !== me && !here_(age, id); });
+}
+
+// Remove everyone who has stopped polling. Returns true if anyone was removed.
+function purge_(st, age, me) {
+  let removed = false;
+  Object.keys(st.players).forEach(function (id) {
+    if (id !== me && !here_(age, id)) {
+      removePlayer_(st, id);
+      removed = true;
+    }
+  });
+  return removed;
+}
+
+// Take a player out of the room and out of the turn order.
+// If that empties a team mid-game, the other team wins.
+function removePlayer_(st, id) {
+  delete st.players[id];
+  ['red', 'blue'].forEach(function (t) {
+    const pos = st.order[t].indexOf(id);
+    if (pos < 0) return;
+    st.order[t].splice(pos, 1);
+    if (pos < st.idx[t]) st.idx[t]--;   // keep pointing at the same next teammate
+  });
+  if (st.phase !== 'playing') return;
+  const redGone = !st.order.red.length;
+  const blueGone = !st.order.blue.length;
+  if (redGone && blueGone) {
+    resetBoard_(st);
+    st.phase = 'lobby';
+  } else if (redGone || blueGone) {
+    st.phase = 'over';
+    st.winner = redGone ? 'blue' : 'red';
+    st.forfeit = true;
+  }
+}
+
+// The host is the saved host while still here, otherwise the earliest player.
 function host_(st, age) {
-  if (st.hostId && st.players[st.hostId] && age[st.hostId] < ACTIVE_MS) return st.hostId;
+  if (st.hostId && st.players[st.hostId] && here_(age, st.hostId)) return st.hostId;
   const ids = Object.keys(st.players)
-    .filter(function (id) { return age[id] < ACTIVE_MS; })
+    .filter(function (id) { return here_(age, id); })
     .sort(function (a, b) { return st.players[a].joined - st.players[b].joined; });
   return ids[0] || null;
 }
 
-// Whose turn it is: the next teammate in order, skipping anyone who is away.
+// Whose turn it is: the next teammate in order. Someone who left but was not
+// removed yet (poll could not get the lock) is skipped.
 function current_(st, age) {
   const list = st.order[st.turn];
   for (let k = 0; k < list.length; k++) {
     const id = list[(st.idx[st.turn] + k) % list.length];
-    if (age[id] < ACTIVE_MS) return id;
+    if (here_(age, id)) return id;
   }
   return null;
 }
@@ -300,9 +364,10 @@ function banList_(board, stone) {
 // ----- What the page sees -----
 
 function view_(st, me, age) {
-  const players = Object.keys(st.players).map(function (id) {
+  // Hide anyone who left even if they are not removed from the state yet.
+  const players = Object.keys(st.players).filter(function (id) { return here_(age, id); }).map(function (id) {
     const p = st.players[id];
-    return { id: id, name: p.name, team: p.team, joined: p.joined, away: !(age[id] < ACTIVE_MS) };
+    return { id: id, name: p.name, team: p.team, joined: p.joined };
   });
   players.sort(function (a, b) { return a.joined - b.joined; });
   return {
@@ -319,6 +384,7 @@ function view_(st, me, age) {
     last: st.last,
     winner: st.winner,
     line: st.line,
-    ban: st.phase === 'playing' ? (st.ban || []) : []
+    forfeit: !!st.forfeit,
+    ban:st.phase === 'playing' ? (st.ban || []) : []
   };
 }
