@@ -487,6 +487,7 @@
   .embed-head .demo-link { margin: 0; padding: 8px 18px; font-size: clamp(14px, 1.4vw, 17px); }
   .lab-frame { flex: 1; min-height: 360px; width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--page); }
 
+  .anatomy h2 { word-break: keep-all; font-size: clamp(24px, 3vw, 40px); }
   .anatomy { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(18px, 3vw, 40px); align-items: center; }
   .anatomy .win pre { font-size: clamp(13px, 1.3vw, 18px); line-height: 1.75; }
   .anatomy pre .t-css { color: var(--k-css); } .anatomy pre .t-html { color: var(--k-html); } .anatomy pre .t-js { color: var(--k-js); }
@@ -504,6 +505,39 @@
   .anatomy pre .tk-cm { color: var(--c-cm); }
   .k-attr { --kc: var(--g-yellow); }
   .anatomy .win.sm pre { font-size: clamp(12px, 1.1vw, 16px); line-height: 1.65; }
+  /* CSS slide: a real element whose rule is shown and edited in DevTools */
+  .lead-line { margin: 0 0 clamp(14px, 2.4vh, 24px); font-size: clamp(17px, 1.9vw, 24px); font-weight: 700; word-break: keep-all; }
+  .lead-line b { color: var(--kc, var(--accent)); }
+  .demo-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: clamp(200px, 36vh, 340px); padding: clamp(18px, 3vh, 32px); border: 2px dashed var(--line); border-radius: 16px; background: var(--stage); }
+  .demo-stage .tag-hint { font-family: var(--mono); font-size: clamp(13px, 1.2vw, 16px); color: var(--muted); }
+  .css-demo {
+    font-size: 20px;
+    background: #1A5FD0;
+    color: white;
+  }
+  .demo-stage .js-demo { font-family: var(--font); font-weight: 700; font-size: 20px; padding: 10px 28px; border: 0; border-radius: 10px; background: var(--k-js); color: #fff; cursor: pointer; }
+  .demo-stage .css-demo { font-family: var(--font); font-weight: 700; padding: 10px 28px; border: 0; border-radius: 10px; cursor: default; }
+  /* Closing slide */
+  .outro { text-align: center; }
+  .outro h2 { max-width: none; }
+  .outro-lead { font-size: clamp(22px, 2.8vw, 36px); font-weight: 700; line-height: 1.5; word-break: keep-all; }
+  .outro-slogan { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px clamp(18px, 3vw, 36px); margin: clamp(22px, 4vh, 40px) 0; font-size: clamp(22px, 2.8vw, 36px); font-weight: 700; letter-spacing: -0.02em; }
+  .outro-slogan b { color: var(--accent); font-weight: 900; }
+  .outro-slogan i { width: 2px; height: 1.1em; background: var(--line); }
+  .outro-next { margin: 0 auto clamp(18px, 3vh, 28px); max-width: 44em; color: var(--muted); font-size: clamp(15px, 1.6vw, 20px); line-height: 1.6; word-break: keep-all; }
+  .outro-next b { color: var(--ink); }
+  /* "직접 살펴보기" card: DevTools steps shown beside each Part 0 explainer */
+  .inspect { border: 1px solid var(--line); border-radius: 16px; background: var(--stage); padding: clamp(14px, 2vw, 24px); }
+  .inspect-head { margin: 0 0 12px; color: var(--accent); font-size: clamp(15px, 1.5vw, 19px); font-weight: 900; }
+  .inspect ol { list-style: none; margin: 0; padding: 0; counter-reset: ins; display: grid; gap: 8px; }
+  .inspect li { counter-increment: ins; position: relative; padding: 10px 14px 10px 54px; background: var(--accent-soft); border-radius: 10px; font-weight: 700; font-size: clamp(14px, 1.45vw, 19px); line-height: 1.4; overflow-wrap: anywhere; }
+  .inspect li::before { content: counter(ins); position: absolute; left: 14px; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--stage); display: grid; place-items: center; font-weight: 900; font-size: 14px; }
+  .inspect li small { display: block; margin-top: 2px; color: var(--muted); font-weight: 500; font-size: .84em; }
+  .inspect code { font-family: var(--mono); font-size: .88em; }
+  .inspect .try { border: 0; box-shadow: none; padding: 0; margin: 0 0 14px; background: none; }
+  .kbd { display: inline-block; font-family: var(--mono); font-size: .85em; line-height: 1.3; padding: 1px 7px; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 6px; background: var(--stage); color: var(--ink); }
+  .rows.code-rows .row { grid-template-columns: clamp(170px, 17vw, 240px) minmax(0, 1fr); }
+  .rows.code-rows .row h3 { font-family: var(--mono); font-size: clamp(13px, 1.2vw, 17px); white-space: nowrap; }
   .try { border: 2px solid var(--ink); border-radius: 16px; background: var(--stage); padding: clamp(16px, 2.4vw, 28px); box-shadow: 6px 6px 0 var(--accent-soft); }
   .try .lbl { margin: 0 0 12px; color: var(--muted); font-size: clamp(13px, 1.3vw, 16px); font-weight: 700; }
   .try input { width: 100%; box-sizing: border-box; font: inherit; font-size: clamp(16px, 1.8vw, 22px); padding: 10px 14px; border: 2px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
@@ -554,15 +588,33 @@
   .pg-tabs { display: flex; gap: 6px; }
   .pg-code { flex: 1; width: 100%; height: clamp(220px, 46vh, 460px); box-sizing: border-box; margin: 0; padding: 12px 14px; border: 0; resize: none; background: transparent; color: var(--code-ink); font-family: var(--mono); font-size: clamp(12px, 1.05vw, 15px); line-height: 1.55; tab-size: 2; white-space: pre; }
   .pg-code:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .pg-edit { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .pg-edit .pg-code { position: relative; z-index: 1; color: transparent; caret-color: var(--code-ink); }
+  .pg-edit .pg-code::selection { color: transparent; background: rgba(130, 170, 245, .35); }
+  .pg-hl { position: absolute; inset: 0; margin: 0; padding: 12px 14px; overflow: hidden; pointer-events: none; color: var(--code-ink); font-family: var(--mono); font-size: clamp(12px, 1.05vw, 15px); line-height: 1.55; tab-size: 2; white-space: pre; }
+  .pg-hl .h-tag { color: #82aaf5; }
+  .pg-hl .h-attr { color: #FDD663; }
+  .pg-hl .h-val, .pg-hl .h-str { color: #5fcf9a; }
+  .pg-hl .h-cm { color: var(--c-cm); font-style: italic; }
+  .pg-hl .h-sel { color: #f2a560; }
+  .pg-hl .h-prop { color: #7fd8e8; }
+  .pg-hl .h-kw { color: #c792ea; }
+  .pg-hl .h-num { color: #f78c6c; }
+  .pg-hl .h-fn { color: #ffcb6b; }
   .pg-view { flex: 1; width: 100%; height: clamp(220px, 46vh, 460px); border: 0; background: #fff; }
   .pg-err { margin: 0; min-height: 1.6em; padding: 6px 12px; background: #fff; color: #D93025; font-family: var(--mono); font-size: 13px; font-weight: 700; border-top: 1px solid #eee; overflow-wrap: anywhere; }
   .pg-err:empty::before { content: "오류 없음"; color: #9AA6BA; font-weight: 500; }
   .pg-lead { margin: 0 0 clamp(10px, 1.8vh, 16px); }
   .pg-check { margin: clamp(10px, 1.8vh, 16px) 0 0; }
-  .reveal { margin-top: clamp(12px, 2vh, 20px); font: inherit; font-weight: 700; font-size: clamp(15px, 1.6vw, 20px); padding: 10px 24px; border: 0; border-radius: 999px; background: var(--accent); color: var(--stage); cursor: pointer; }
-  .reveal:focus-visible { outline: 3px solid var(--g-yellow); outline-offset: 3px; }
-  .tweak .ans { visibility: hidden; }
-  .shown .ans { visibility: visible; }
+  /* Full-height playground: editor and preview fill the slide */
+  @media (min-width: 721px) {
+    .slide.pg-full { padding-left: clamp(16px, 2.5vw, 36px); padding-right: clamp(16px, 2.5vw, 36px); }
+    .slide.pg-full h2 { font-size: clamp(22px, 2.4vw, 32px); }
+    .slide.pg-full .inner { max-width: 1600px; height: 100%; display: flex; flex-direction: column; margin: 0 auto; }
+    .slide.pg-full .pg { flex: 1; min-height: 0; }
+    .slide.pg-full .pg-code, .slide.pg-full .pg-view { height: auto; min-height: 0; }
+    .slide.pg-full .pg-code, .slide.pg-full .pg-hl { font-size: clamp(13px, 1.15vw, 17px); }
+  }
   code.diff { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: 2px 8px; border-radius: 6px; overflow-wrap: anywhere; }
   .try .out { margin: 16px 0 0; min-height: 1.5em; font-size: clamp(18px, 2.2vw, 28px); font-weight: 900; color: var(--accent); word-break: keep-all; }
 
@@ -635,30 +687,17 @@
       </div>
     </section>
 
-    <!-- Intro: why teachers build their own apps -->
-    <section class="slide" aria-label="AI 시대">
-      <div class="inner">
-        <h2>AI 시대, 교사가 필요한 앱을 직접 만들어 쓰는 시대</h2>
-        <div class="rows">
-          <div class="row"><h3>예전</h3><p>비슷한 앱을 찾거나, 누군가 만들어 주기를 기다림</p></div>
-          <div class="row"><h3>지금</h3><p>AI와 함께 우리 반에 딱 맞는 앱을 직접 만듦</p></div>
-          <div class="row"><h3>핵심</h3><p>프로그래머가 아니어도 좋은 아이디어만 있으면 충분</p></div>
-        </div>
-      </div>
-    </section>
-
     <!-- Intro: today's plan -->
     <section class="slide" aria-label="오늘 할 일">
       <div class="inner">
         <h2>오늘 함께 할 일</h2>
         <ol class="steps">
-          <li><a class="goto" href="#" data-goto="파트 0">웹앱 기초 · HTML · CSS · JS 알아보기</a></li>
+          <li><a class="goto" href="#" data-goto="파트 0">웹앱 기초 · 웹페이지는 어떻게 만들어질까?</a></li>
           <li><a class="goto" href="#" data-goto="파트 1">돌림판 · 나의 첫 웹앱</a></li>
           <li><a class="goto" href="#" data-goto="파트 2">게시판 · 스프레드시트에 데이터 저장하기</a></li>
           <li><a class="goto" href="#" data-goto="파트 3">미사일 피하기 · 랭킹이 있는 게임</a></li>
           <li><a class="goto" href="#" data-goto="파트 4">나만의 웹앱 · 아이디어를 만들고 함께 공유하기</a></li>
         </ol>
-        <p class="note">실습마다 코드를 복사해서 붙여넣기만 하면 돼요. 누구나 따라 할 수 있어요!</p>
       </div>
     </section>
 
@@ -668,8 +707,7 @@
         <div class="pnum" aria-hidden="true">0</div>
         <div>
           <p class="plabel">들어가기</p>
-          <h2>웹앱 기초 · 웹앱은 어떻게 생겼을까?</h2>
-          <a class="demo-link" href="#" data-open-lab>▶ 웹앱 들여다보기 새 창으로 열기</a>
+          <h2>웹앱 기초 · 웹페이지는 어떻게 만들어질까?</h2>
         </div>
       </div>
     </section>
@@ -683,234 +721,76 @@
           <div class="card k-css"><b>CSS</b><span class="q">어떻게 보이나</span><span class="eg">색, 크기, 글꼴, 배치<br>집으로 치면 인테리어</span></div>
           <div class="card k-js"><b>JS</b><span class="q">무엇을 하나</span><span class="eg">누르면 보내기, 돌리기, 점수 세기<br>집으로 치면 전기와 수도</span></div>
         </div>
-        <p class="note">기록을 남기려면 <b>저장소</b>가, 여러 사람이 함께 보려면 <b>서버</b>가 필요해요. 하나씩 알아본 뒤 직접 꺼 보며 확인해 봐요.</p>
-      </div>
-    </section>
-
-    <!-- HTML: what it is -->
-    <section class="slide tight" aria-label="HTML이란">
-      <div class="inner">
-        <h2>HTML · 화면에 무엇이 있는지 적어요</h2>
-        <p class="def">HTML은 웹페이지에 <b>무엇이</b> 있고 <b>어떤 순서로</b> 놓이는지 적는 언어예요.</p>
-        <div class="rows compact">
-          <div class="row"><h3>이름</h3><p>HyperText Markup Language<small>글자에 &lt;표시&gt;(태그)를 붙여 "이건 제목, 이건 버튼"이라고 알려 주는 언어</small></p></div>
-          <div class="row"><h3>하는 일</h3><p>제목, 글, 입력칸, 버튼, 그림을 화면에 놓기</p></div>
-          <div class="row"><h3>놓이는 순서</h3><p>적힌 순서대로 위에서 아래로 쌓여요</p></div>
-          <div class="row"><h3>맡지 않는 일</h3><p>색과 크기는 CSS, 누르면 움직이는 건 JS가 맡아요</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HTML: reading one tag -->
-    <section class="slide" aria-label="태그 읽는 법">
-      <div class="inner anatomy">
-        <div>
-          <h2>태그 읽는 법</h2>
-          <div class="rows compact map-rows">
-            <div class="row k-html"><h3>&lt;h1&gt;</h3><p>여는 태그 · 여기서부터 제목이에요</p></div>
-            <div class="row k-attr"><h3>id="title"</h3><p>속성 · 이름표예요. CSS와 JS가 이 이름으로 찾아와요</p></div>
-            <div class="row"><h3>우리 반 돌림판</h3><p>내용 · 화면에 실제로 보이는 글자</p></div>
-            <div class="row k-html"><h3>&lt;/h1&gt;</h3><p>닫는 태그 · /가 붙어요. 빠뜨리면 아래 내용까지 전부 제목이 돼요</p></div>
-          </div>
-        </div>
-        <div class="win" aria-label="태그 예시">
-          <div class="win-bar"><i></i><i></i><i></i><span>태그 하나의 생김새</span></div>
-<pre><span class="tk-tag">&lt;h1</span> <span class="tk-attr">id=</span><span class="tk-val">"title"</span><span class="tk-tag">&gt;</span><span class="tk-txt">우리 반 돌림판</span><span class="tk-tag">&lt;/h1&gt;</span>
-
-<span class="tk-cm">여는 태그 + 내용 + 닫는 태그</span>
-<span class="tk-cm">= 요소(element) 하나</span>
-
-<span class="tk-tag">&lt;input&gt;</span>  <span class="tk-cm">← 닫는 태그가 없는 요소도 있어요</span></pre>
-        </div>
       </div>
     </section>
 
     <!-- HTML: file skeleton -->
-    <section class="slide" aria-label="HTML 뼈대">
+    <section class="slide tight" aria-label="HTML 뼈대">
       <div class="inner anatomy">
         <div>
           <h2>HTML 파일의 뼈대</h2>
-          <div class="rows compact">
-            <div class="row"><h3>&lt;!DOCTYPE html&gt;</h3><p>이 파일은 HTML이라고 알려 줘요</p></div>
-            <div class="row"><h3>&lt;head&gt;</h3><p>화면에 안 보이는 설정<small>한글 설정, 브라우저 탭 제목, CSS</small></p></div>
-            <div class="row"><h3>&lt;body&gt;</h3><p>화면에 보이는 모든 것<small>제목, 버튼, 입력칸, 그리고 JS</small></p></div>
-            <div class="row"><h3>들여쓰기</h3><p>상자 안의 상자예요<small>안쪽 태그는 바깥 태그 안에 들어 있다는 뜻</small></p></div>
+          <div class="rows compact map-rows code-rows">
+            <div class="row k-html"><h3>&lt;!DOCTYPE html&gt;</h3><p>이 파일은 HTML이라고 알려 줘요</p></div>
+            <div class="row k-html"><h3>&lt;head&gt;</h3><p>화면에 안 보이는 설정<small>한글 설정, 브라우저 탭 제목, CSS</small></p></div>
+            <div class="row k-html"><h3>&lt;body&gt;</h3><p>화면에 보이는 모든 것<small>제목, 버튼, 입력칸, 그리고 JS</small></p></div>
           </div>
         </div>
-        <div class="win" aria-label="HTML 파일 구조">
-          <div class="win-bar"><i></i><i></i><i></i><span>index.html</span></div>
-<pre><span class="tk-tag">&lt;!DOCTYPE html&gt;</span>
-<span class="tk-tag">&lt;html&gt;</span>
-  <span class="tk-tag">&lt;head&gt;</span>
-    <span class="tk-tag">&lt;meta</span> <span class="tk-attr">charset=</span><span class="tk-val">"UTF-8"</span><span class="tk-tag">&gt;</span>
-    <span class="tk-tag">&lt;title&gt;</span>돌림판<span class="tk-tag">&lt;/title&gt;</span>
-    <span class="t-css">&lt;style&gt; … &lt;/style&gt;</span>
-  <span class="tk-tag">&lt;/head&gt;</span>
-  <span class="tk-tag">&lt;body&gt;</span>
-    <span class="tk-tag">&lt;h1&gt;</span>우리 반 돌림판<span class="tk-tag">&lt;/h1&gt;</span>
-    <span class="tk-tag">&lt;button&gt;</span>돌리기<span class="tk-tag">&lt;/button&gt;</span>
-    <span class="t-js">&lt;script&gt; … &lt;/script&gt;</span>
-  <span class="tk-tag">&lt;/body&gt;</span>
-<span class="tk-tag">&lt;/html&gt;</span></pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- HTML: common tags -->
-    <section class="slide tight" aria-label="HTML 태그">
-      <div class="inner">
-        <h2>자주 쓰는 HTML 태그</h2>
-        <div class="tscroll">
-          <table class="tweak">
-            <thead><tr><th>태그</th><th>하는 일</th><th>오늘 만들 앱에서</th></tr></thead>
-            <tbody>
-              <tr><td class="ln"><code>&lt;h1&gt;</code> ~ <code>&lt;h6&gt;</code></td><td>제목 · 숫자가 클수록 작은 제목</td><td>돌림판, 게시판 제목</td></tr>
-              <tr><td class="ln"><code>&lt;p&gt;</code></td><td>문단 · 한 덩어리 글</td><td>안내 문구</td></tr>
-              <tr><td class="ln"><code>&lt;div&gt;</code></td><td>상자 · 여러 요소를 하나로 묶기</td><td>게임 시작·결과 카드</td></tr>
-              <tr><td class="ln"><code>&lt;button&gt;</code></td><td>버튼 · 누른 뒤 할 일은 JS가 맡아요</td><td>돌리기, 글 올리기</td></tr>
-              <tr><td class="ln"><code>&lt;input&gt;</code></td><td>한 줄 입력칸</td><td>게임 기록 이름</td></tr>
-              <tr><td class="ln"><code>&lt;textarea&gt;</code></td><td>여러 줄 입력칸</td><td>돌림판 명단, 게시글 내용</td></tr>
-              <tr><td class="ln"><code>&lt;ol&gt;</code> <code>&lt;li&gt;</code></td><td>번호 목록과 그 항목</td><td>게임 랭킹</td></tr>
-              <tr><td class="ln"><code>&lt;canvas&gt;</code></td><td>JS로 그림을 그리는 도화지</td><td>돌림판 원판, 게임 화면</td></tr>
-              <tr><td class="ln"><code>&lt;img&gt;</code> <code>&lt;a&gt;</code></td><td>그림 넣기 · 다른 페이지로 가는 링크</td><td>나만의 앱에서</td></tr>
-            </tbody>
-          </table>
+        <div class="inspect">
+          <p class="inspect-head">직접 살펴보기 · 지금 이 화면도 HTML이에요</p>
+          <ol>
+            <li><span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">C</span> 누르기<small>요소 선택 모드가 켜져요 · Mac은 Cmd + Option + C</small></li>
+            <li>이 제목 누르기<small>개발자 도구에 &lt;h2&gt; 태그가 표시돼요</small></li>
+            <li>위쪽 태그 따라 올라가기<small>&lt;body&gt;와 &lt;html&gt; 상자 안에 들어 있어요</small></li>
+            <li>&lt;head&gt; 펼쳐 보기<small>&lt;title&gt;과 &lt;style&gt;이 들어 있어요</small></li>
+          </ol>
         </div>
       </div>
     </section>
 
     <!-- CSS: one rule -->
-    <section class="slide" aria-label="CSS란">
+    <section class="slide tight" aria-label="CSS란">
       <div class="inner anatomy">
         <div>
           <h2>CSS · 어떻게 보일지 정해요</h2>
-          <div class="rows compact map-rows">
-            <div class="row k-html"><h3>button</h3><p>누구를 · 화면의 모든 버튼</p></div>
-            <div class="row k-attr"><h3>font-size</h3><p>무엇을 · 글자 크기</p></div>
-            <div class="row k-js"><h3>32px</h3><p>얼마로 · 숫자만 바꿔도 화면이 달라져요</p></div>
-          </div>
-          <p class="note">CSS는 <b>&lt;style&gt;</b> 안에 적어요. 통째로 지워도 내용은 그대로이고, 모양만 브라우저 기본값으로 돌아가요.</p>
+          <p class="lead-line k-css">CSS는 HTML 요소의 <b>색 · 크기 · 모양</b>을 정해요.</p>
+          <div class="demo-stage"><button type="button" class="css-demo">예시 버튼</button><span class="tag-hint">&lt;button class="css-demo"&gt;</span></div>
         </div>
-        <div class="win" aria-label="CSS 예시">
-          <div class="win-bar"><i></i><i></i><i></i><span>CSS 규칙 하나</span></div>
-<pre><span class="t-css">&lt;style&gt;</span>
-  <span class="tk-tag">button</span> {
-    <span class="tk-attr">font-size</span>: <span class="tk-val">32px</span>;
-    <span class="tk-attr">background</span>: <span class="tk-val">#1A5FD0</span>;
-    <span class="tk-attr">color</span>: <span class="tk-val">white</span>;
-  }
-<span class="t-css">&lt;/style&gt;</span></pre>
+        <div class="inspect">
+          <p class="inspect-head">직접 살펴보기 · CSS 값 바꿔 보기</p>
+          <ol>
+            <li><span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">C</span> 누르기<small>요소 선택 모드가 켜져요 · Mac은 Cmd + Option + C</small></li>
+            <li>왼쪽 [예시 버튼] 누르기<small>Elements 창에 &lt;button class="css-demo"&gt;가 선택돼요</small></li>
+            <li>옆의 Styles 창에서 <code>.css-demo</code> 찾기<small>class 이름 앞에 점(.)을 붙여 CSS를 적어요</small></li>
+            <li><code>#1A5FD0</code>은 <code>red</code>로, <code>20px</code>은 <code>40px</code>로<small>값을 눌러 고치면 버튼이 바로 바뀌어요 · 새로고침하면 원래대로</small></li>
+          </ol>
         </div>
       </div>
     </section>
 
     <!-- JS: what it is -->
     <section class="slide tight" aria-label="JavaScript란">
-      <div class="inner">
-        <h2>JavaScript · 무엇을 할지 정해요</h2>
-        <p class="def">JavaScript(JS)는 버튼을 누르거나 글을 입력했을 때 <b>무슨 일이 일어날지</b> 적는 언어예요.</p>
-        <div class="flow">
-          <div class="box b1"><b>① 가져오기</b><span>입력칸에 적힌 값을 읽어요</span></div>
-          <div class="ar" aria-hidden="true">→</div>
-          <div class="box b2"><b>② 처리하기</b><span>계산하고, 섞고, 뽑아요</span></div>
-          <div class="ar" aria-hidden="true">→</div>
-          <div class="box b3"><b>③ 보여주기</b><span>결과를 화면의 정해진 자리에 써요</span></div>
+      <div class="inner anatomy">
+        <div>
+          <h2>JavaScript · 무엇을 할지 정해요</h2>
+          <p class="lead-line k-js">JS는 누르면 화면이 <b>반응하게</b> 만들어요.</p>
+          <div class="demo-stage"><button type="button" class="js-demo" id="js-demo">눌러 보세요 · 0번</button><span class="tag-hint">&lt;button id="js-demo"&gt;</span></div>
         </div>
-        <p class="note">JS는 <b>&lt;script&gt;</b> 안에 적어요. Code.gs도 JavaScript인데, 브라우저가 아니라 <b>구글 서버</b>에서 실행돼서 스프레드시트를 다룰 수 있어요.</p>
-      </div>
-    </section>
-
-    <!-- JS: live demo -->
-    <section class="slide tight" aria-label="버튼을 누르면">
-      <div class="inner">
-        <h2>버튼을 누르면 일어나는 일</h2>
-        <div class="anatomy">
-          <div class="win sm" aria-label="인사하기 코드">
-            <div class="win-bar"><i></i><i></i><i></i><span>index.html 의 일부</span></div>
-<pre><span class="tk-tag">&lt;input</span> <span class="tk-attr">id=</span><span class="tk-val">"name"</span><span class="tk-tag">&gt;</span>
-<span class="tk-tag">&lt;button</span> <span class="tk-attr">onclick=</span><span class="tk-val">"hello()"</span><span class="tk-tag">&gt;</span>인사하기<span class="tk-tag">&lt;/button&gt;</span>
-<span class="tk-tag">&lt;p</span> <span class="tk-attr">id=</span><span class="tk-val">"result"</span><span class="tk-tag">&gt;&lt;/p&gt;</span>
-
-<span class="t-js">&lt;script&gt;</span>
-function hello() {
-  <span class="tk-cm">// ① 가져오기</span>
-  const name = document.getElementById(<span class="tk-val">'name'</span>).value;
-  <span class="tk-cm">// ② 처리하기</span>
-  const msg = name + <span class="tk-val">' 님, 안녕하세요!'</span>;
-  <span class="tk-cm">// ③ 보여주기</span>
-  document.getElementById(<span class="tk-val">'result'</span>).textContent = msg;
-}
-<span class="t-js">&lt;/script&gt;</span></pre>
-          </div>
-          <div class="try">
-            <p class="lbl">직접 해 보기 · 왼쪽 코드가 그대로 움직여요</p>
-            <input id="try-name" type="text" placeholder="이름을 적어 보세요" aria-label="이름" autocomplete="off">
-            <button type="button" id="try-btn">인사하기</button>
-            <p class="out" id="try-out" aria-live="polite"></p>
-          </div>
+        <div class="inspect">
+          <p class="inspect-head">직접 살펴보기 · 버튼에 붙은 JS 찾기</p>
+          <ol>
+            <li><span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">C</span> 누르기<small>요소 선택 모드가 켜져요 · Mac은 Cmd + Option + C</small></li>
+            <li>왼쪽에 [눌러 보세요] 버튼 선택<small>Elements 창에 &lt;button id="js-demo"&gt;가 선택돼요</small></li>
+            <li>옆의 Event Listeners 탭 열기<small>click이 붙어 있어요 · 누르면 실행할 JS예요</small></li>
+            <li>click 옆 Remove 누르고 버튼 눌러 보기<small>숫자가 안 올라가요 · JS가 없으면 버튼은 그림일 뿐이에요</small></li>
+          </ol>
         </div>
       </div>
     </section>
 
-    <!-- JS: line by line -->
-    <section class="slide tight" aria-label="JS 한 줄씩">
+    <!-- Edit-it lab: playground -->
+    <section class="slide tight pg-full" aria-label="index.html 살짝씩 수정해 보기">
       <div class="inner">
-        <h2>JS 한 줄씩 읽기</h2>
-        <div class="tscroll">
-          <table class="tweak">
-            <thead><tr><th>코드</th><th>뜻</th></tr></thead>
-            <tbody>
-              <tr><td class="ln"><code>onclick="hello()"</code></td><td>버튼을 누르면 hello 함수를 실행해요</td></tr>
-              <tr><td class="ln"><code>function hello() { … }</code></td><td>함수 · 할 일을 묶어 이름을 붙인 것</td></tr>
-              <tr><td class="ln"><code>const name = …</code></td><td>변수 · 값을 name이라는 상자에 담아 둬요</td></tr>
-              <tr><td class="ln"><code>getElementById('name')</code></td><td>이름표(id)가 name인 요소를 찾아요</td></tr>
-              <tr><td class="ln"><code>.value</code></td><td>입력칸에 적힌 글자</td></tr>
-              <tr><td class="ln"><code>.textContent = msg</code></td><td>찾은 요소에 글자를 써 넣어요</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">HTML의 <b>id</b>와 JS에 적은 이름이 한 글자라도 다르면 동작하지 않아요. 가장 흔한 오류 원인이에요.</p>
-      </div>
-    </section>
-
-    <!-- Screen to code -->
-    <section class="slide tight" aria-label="어디를 고칠까">
-      <div class="inner">
-        <h2>고칠 곳은 화면이 알려 줘요</h2>
-        <div class="rows compact map-rows">
-          <div class="row k-html"><h3>HTML</h3><p>글자·버튼·입력칸이 없거나 틀렸어요<small>&lt;body&gt; 안의 태그를 봐요</small></p></div>
-          <div class="row k-css"><h3>CSS</h3><p>색·크기·배치가 이상해요<small>&lt;style&gt; 안을 봐요</small></p></div>
-          <div class="row k-js"><h3>JS</h3><p>눌러도 아무 일이 없어요<small>&lt;script&gt; 안을 봐요 · F12 콘솔의 빨간 글씨가 단서예요</small></p></div>
-          <div class="row k-store"><h3>저장</h3><p>새로고침하면 사라져요<small>저장을 맡은 Code.gs와 스프레드시트를 봐요</small></p></div>
-        </div>
-        <p class="note">AI에게 부탁할 때도 "&lt;style&gt;에서 button 글자 크기만 키워 줘"처럼 자리를 짚어 주면 다른 곳이 망가지지 않아요.</p>
-      </div>
-    </section>
-
-    <!-- Break-it lab: predict first -->
-    <section class="slide tight" aria-label="지워 보기 예측">
-      <div class="inner">
-        <h2>지우기 전에, 먼저 예측해요</h2>
-        <p class="note pg-lead">설명을 듣는 대신 한 줄을 지워 보면, 그 줄이 무슨 일을 했는지 화면이 알려 줘요. 결과를 보기 전에 옆 사람에게 예측을 말해 보세요.</p>
-        <div class="tscroll">
-          <table class="tweak" id="break-answers">
-            <thead><tr><th>영역</th><th>바꿀 곳</th><th>결과</th></tr></thead>
-            <tbody>
-              <tr><td class="ln"><span class="chip k-html">HTML</span>미션 1</td><td><code>&lt;/h1&gt;</code> 지우기</td><td class="ans">제목이 끝나지 않아 아래 내용까지 크게 보여요. 오류 메시지는 없어요</td></tr>
-              <tr><td class="ln"><span class="chip k-css">CSS</span>미션 2</td><td><code>&lt;style&gt;</code> 안을 모두 지우기</td><td class="ans">내용은 그대로, 색과 크기만 브라우저 기본 모양으로 돌아가요</td></tr>
-              <tr><td class="ln"><span class="chip k-js">JS</span>미션 3</td><td><code>onclick="pick()"</code> → <code>"pic()"</code></td><td class="ans">눌러도 아무 일이 없어요. 오류 칸에 <b>pic is not defined</b></td></tr>
-              <tr><td class="ln"><span class="chip k-js">JS</span>미션 4</td><td><code>id="result"</code> → <code>id="res"</code></td><td class="ans">뽑기를 누르면 오류가 나요. JS가 찾는 이름표 result가 없어서예요</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <button class="reveal" type="button" data-reveal="break-answers" aria-pressed="false">결과 보기</button>
-      </div>
-    </section>
-
-    <!-- Break-it lab: playground -->
-    <section class="slide tight" aria-label="직접 지워 보기">
-      <div class="inner">
-        <h2>직접 지워 보기</h2>
+        <h2>index.html 살짝씩 수정해 보기</h2>
         <div class="pg" data-pg>
           <div class="pg-pane">
             <div class="pg-bar"><span>index.html · 고치면 바로 오른쪽에 반영돼요</span><button type="button" data-pg-reset>↺ 처음 코드로</button></div>
@@ -950,7 +830,6 @@ function pick() {
             <p class="pg-err" aria-live="polite"></p>
           </div>
         </div>
-        <p class="note">망가져도 괜찮아요. <b>↺ 처음 코드로</b>를 누르면 돌아와요. 미션 3·4의 빨간 오류 칸은 F12 콘솔에 나오는 내용과 같아요.</p>
       </div>
     </section>
 
@@ -965,28 +844,25 @@ function pick() {
       </div>
     </section>
 
-    <!-- Map to today's apps -->
-    <section class="slide" aria-label="오늘 만들 웹앱에 대입하면">
+    <!-- Part 0 wrap-up: pick one element, ask AI to change only that -->
+    <section class="slide tight" aria-label="고칠 부분만 AI에게">
       <div class="inner anatomy">
         <div>
-          <h2>오늘 만들 웹앱에 대입하면</h2>
-          <div class="rows map-rows">
-            <div class="row k-html"><h3>index.html</h3><p>HTML · CSS · JS가 한 파일에</p></div>
-            <div class="row k-js"><h3>Code.gs</h3><p>구글 서버에서 도는 JS</p></div>
-            <div class="row k-store"><h3>스프레드시트</h3><p>여럿이 함께 쓰는 저장소</p></div>
+          <h2>고칠 부분만 콕 집어 AI에게</h2>
+          <div class="rows compact map-rows">
+            <div class="row"><h3>통째로 부탁하면</h3><p>다른 곳까지 바뀔 수 있어요<small>멀쩡하던 기능이 사라지기도 해요</small></p></div>
+            <div class="row k-js"><h3>콕 집어 부탁하면</h3><p>그 부분만 바뀌어요<small>무엇이 달라졌는지 확인하기도 쉬워요</small></p></div>
+            <div class="row"><h3>부탁 예시</h3><p>"아래 코드에서 버튼 색만 초록색으로 바꿔 줘"<small>+ 복사한 코드 붙여넣기</small></p></div>
           </div>
         </div>
-        <div class="win" aria-label="index.html 구조 예시">
-          <div class="win-bar"><i></i><i></i><i></i><span>index.html 의 생김새</span></div>
-<pre><span class="tag">&lt;style&gt;</span>
-  <span class="t-css">button { color: blue; }</span>   <span class="tag">← CSS</span>
-<span class="tag">&lt;/style&gt;</span>
-
-<span class="t-html">&lt;button&gt;돌리기&lt;/button&gt;</span>     <span class="tag">← HTML</span>
-
-<span class="tag">&lt;script&gt;</span>
-  <span class="t-js">// 누르면 돌림판 돌리기</span>  <span class="tag">← JS</span>
-<span class="tag">&lt;/script&gt;</span></pre>
+        <div class="inspect">
+          <p class="inspect-head">이따가 AI로 웹앱을 고칠 때</p>
+          <ol>
+            <li><span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">C</span> 누르고 고칠 부분 누르기<small>개발자 도구에 그 부분의 태그가 표시돼요</small></li>
+            <li>그 태그에 마우스 오른쪽 버튼 → Copy → Copy element<small>그 부분의 코드만 복사돼요</small></li>
+            <li>Gemini에 붙여넣고 "이 부분만 수정해 줘"<small>무엇을 어떻게 바꿀지 함께 적어요</small></li>
+            <li>받은 코드로 그 부분만 바꾸기<small>index.html에서 Ctrl + F로 같은 코드를 찾아 바꿔요</small></li>
+          </ol>
         </div>
       </div>
     </section>
@@ -1007,7 +883,7 @@ function pick() {
     <section class="slide" aria-label="Apps Script란">
       <div class="inner">
         <h2>Google Apps Script란?</h2>
-        <p class="def">구글 서비스를 자바스크립트로 다루고 확장할 수 있도록 구글이 제공하는 개발 플랫폼입니다.</p>
+        <p class="def">자바스크립트를 기반으로 구글 스프레드시트, 문서, Gmail 등 구글 서비스를 <b>자동화</b>하고 <b>기능을 확장</b>할 수 있는 개발 도구입니다.</p>
         <ul class="svc" aria-label="구글 서비스">
           <li><i style="background:var(--g-green)"></i>스프레드시트</li>
           <li><i style="background:var(--g-blue)"></i>문서</li>
@@ -1434,11 +1310,10 @@ Daniel&lt;/textarea&gt;
         <div class="flow">
           <div class="box b1"><b>index.html</b><span>화면 · 글 쓰는 곳</span></div>
           <div class="ar" aria-hidden="true">→</div>
-          <div class="box b2"><b>Code.gs</b><span>처리 · 저장 · 확인 · 삭제</span></div>
+          <div class="box b2"><b>Code.gs</b><span>중간 다리 · 글을 시트에 적고, 선생님 비밀번호를 확인하고, 글을 지워 줘요</span></div>
           <div class="ar" aria-hidden="true">→</div>
           <div class="box b3"><b>스프레드시트</b><span>저장소 · 글이 쌓이는 곳</span></div>
         </div>
-        <p class="note">Code.gs는 자바스크립트로 쓴 파일이에요.</p>
       </div>
     </section>
 
@@ -1989,25 +1864,6 @@ function clean_(value, max, label) {
       </div>
     </section>
 
-    <!-- Tweak: 바꿔 보기 (게시판) -->
-    <section class="slide tight" aria-label="바꿔 보기 (게시판)">
-      <div class="inner">
-        <h2>바꿔 보기 : 우리 반 게시판으로</h2>
-        <div class="tscroll">
-          <table class="tweak">
-            <thead><tr><th>몇 번째 줄</th><th>지금</th><th>이렇게 바꿔 보기</th><th>무엇이 바뀌나</th></tr></thead>
-            <tbody>
-            <tr><td class="ln">90<small>index.html</small></td><td><code>Class Board Practice</code></td><td class="to"><code>3학년 2반 게시판</code></td><td><span class="chip k-html">HTML</span>맨 위 제목 글자</td></tr>
-            <tr><td class="ln">105<small>index.html</small></td><td><code>&gt;Post&lt;</code></td><td class="to"><code>&gt;올리기&lt;</code></td><td><span class="chip k-html">HTML</span>글 올리기 버튼 글자 (&gt; &lt; 사이만 바꿔요)</td></tr>
-            <tr><td class="ln">13<small>index.html</small></td><td><code>#1A5FD0</code></td><td class="to"><code>#188038</code></td><td><span class="chip k-css">CSS</span>버튼 · 강조 색 한꺼번에 (파랑 → 초록)</td></tr>
-            <tr><td class="ln">104<small>index.html</small></td><td><code>maxlength=&quot;1000&quot;</code></td><td class="to"><code>maxlength=&quot;200&quot;</code></td><td><span class="chip k-html">HTML</span>글 내용 최대 글자 수</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">모두 index.html 에서 바꿔요. 바꾼 뒤 Ctrl + S → 배포 → 배포 관리 → 연필(수정) → 버전: <b>새 버전</b> → 배포. 그다음 웹앱 주소를 새로고침하면 바뀌어 있어요.</p>
-      </div>
-    </section>
-
     <!-- Part 3 divider -->
     <section class="slide" aria-label="파트 3">
       <div class="inner part p3">
@@ -2044,23 +1900,6 @@ function clean_(value, max, label) {
       </div>
     </section>
 
-    <!-- Ranking sheet example -->
-    <section class="slide" aria-label="Records 시트 예시">
-      <div class="inner">
-        <h2>스프레드시트가 랭킹판이 돼요</h2>
-        <div class="tscroll">
-          <table class="sheet db" aria-label="Records 시트 예시">
-            <thead><tr><th>Name</th><th>Time (s)</th><th>Date</th></tr></thead>
-            <tbody>
-              <tr><td>민준</td><td>42.3</td><td>2026-09-29 10:12</td></tr>
-              <tr><td>서연</td><td>37.1</td><td>2026-09-29 10:15</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="cap">게임이 끝날 때마다 새 줄이 자동으로 추가돼요</p>
-      </div>
-    </section>
-
     <!-- File roles (game) -->
     <section class="slide" aria-label="파일의 역할 (게임)">
       <div class="inner">
@@ -2068,11 +1907,10 @@ function clean_(value, max, label) {
         <div class="flow">
           <div class="box b1"><b>index.html</b><span>화면 · 게임 플레이</span></div>
           <div class="ar" aria-hidden="true">→</div>
-          <div class="box b2"><b>Code.gs</b><span>처리 · 기록 저장 · 랭킹 계산</span></div>
+          <div class="box b2"><b>Code.gs</b><span>중간 다리 · 받은 기록을 시트에 적고, 빠른 순으로 랭킹을 골라 줘요</span></div>
           <div class="ar" aria-hidden="true">→</div>
           <div class="box b3"><b>스프레드시트</b><span>저장소 · 기록이 쌓이는 곳</span></div>
         </div>
-        <p class="note">Code.gs는 자바스크립트로 쓴 파일이에요.</p>
       </div>
     </section>
 
@@ -2629,25 +2467,6 @@ function buildRanking_(playerName) {
       </div>
     </section>
 
-    <!-- Tweak: 바꿔 보기 (게임) -->
-    <section class="slide tight" aria-label="바꿔 보기 (게임)">
-      <div class="inner">
-        <h2>바꿔 보기 : 우리 반 게임으로</h2>
-        <div class="tscroll">
-          <table class="tweak">
-            <thead><tr><th>몇 번째 줄</th><th>지금</th><th>이렇게 바꿔 보기</th><th>무엇이 바뀌나</th></tr></thead>
-            <tbody>
-            <tr><td class="ln">67<small>index.html</small></td><td><code>Missile Dodge</code></td><td class="to"><code>미사일 피하기</code></td><td><span class="chip k-html">HTML</span>게임 제목 글자</td></tr>
-            <tr><td class="ln">337<small>index.html</small></td><td><code>&#x27;#1A5FD0&#x27;</code></td><td class="to"><code>&#x27;#E91E63&#x27;</code></td><td><span class="chip k-css">색</span>내 캐릭터 색 (JS 안의 색 값)</td></tr>
-            <tr><td class="ln">110<small>index.html</small></td><td><code>START_SPEED = 120</code></td><td class="to"><code>START_SPEED = 60</code></td><td><span class="chip k-js">JS</span>처음 미사일 속도 (느릴수록 쉬워요)</td></tr>
-            <tr><td class="ln">2<small>Code.gs</small></td><td><code>TOP_N = 10</code></td><td class="to"><code>TOP_N = 5</code></td><td><span class="chip k-js">서버 JS</span>랭킹에 보이는 사람 수</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="note">줄 번호 아래 파일 이름을 꼭 확인하세요. 바꾼 뒤 Ctrl + S → 배포 → 배포 관리 → 연필(수정) → 버전: <b>새 버전</b> → 배포. 그다음 웹앱 주소를 새로고침하면 바뀌어 있어요.</p>
-      </div>
-    </section>
-
     <!-- Part 4 divider -->
     <section class="slide" aria-label="파트 4">
       <div class="inner part p4">
@@ -2701,7 +2520,7 @@ function buildRanking_(playerName) {
                 <li>삼삼(3-3) 금지 자리 표시</li>
               </ul>
               <p class="ex-tech">Apps Script + 캐시 · 1.5초마다 판을 맞춰요</p>
-              <a class="ex-link" href="https://script.google.com/macros/s/AKfycbyqMkc_Gz5AvbPj45U9QZQjMI8TBAq3ZxbupN6ZmYwfdinIMaHTx_a0q0IiSwid3cP_Wg/exec" target="_blank" rel="noopener">▶ 바로 해 보기</a>
+              <a class="ex-link" href="https://script.google.com/macros/s/AKfycbwPvECzmRhWU_mZEcuT2DIXD7hYYjOGGpWCnh0eHLaIQf9tBe99eNwJF42y_qZxPIP4Ug/exec" target="_blank" rel="noopener">▶ 바로 해 보기</a>
             </div>
           </article>
           <article class="ex">
@@ -2905,11 +2724,12 @@ function pick() {
     </section>
 
     <!-- Closing -->
-    <section class="slide" aria-label="마무리">
-      <div class="inner">
+    <section class="slide tight" aria-label="마무리">
+      <div class="inner outro">
         <h2>감사합니다</h2>
-        <p class="def">우리 교실에 가장 좋은 앱은 선생님의 경험에서 나옵니다. 코드는 AI가, 아이디어는 선생님이.</p>
-        <p class="note">오늘 웹앱 세 개를 만들었어요. 이제 우리 반에 필요한 앱을 직접 만들어 보세요.</p>
+        <p class="outro-lead">우리 교실에 가장 필요한 앱은<br>선생님의 경험과 아이디어에서 시작됩니다.</p>
+        <p class="outro-slogan"><span>코드는 <b>AI</b>가,</span><i aria-hidden="true"></i><span>아이디어는 <b>선생님</b>이!</span></p>
+        <p class="outro-next">이제 선생님의 교육 경험과 아이디어를 바탕으로, <b>우리 반에 꼭 필요한 앱을 직접 만들어 보세요!</b></p>
         <a class="link-box" href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a>
       </div>
     </section>
@@ -2929,13 +2749,13 @@ function pick() {
 
 <nav class="ctl" aria-label="슬라이드 이동">
   <button id="toc-btn" class="toc-btn" type="button" aria-controls="toc" aria-expanded="false" title="목차 (T)">☰ 목차</button>
-  <button id="prev"type="button" aria-label="이전 슬라이드">이전</button>
   <div class="bar" aria-hidden="true"><i id="prog"></i></div>
   <form class="count" id="jump" autocomplete="off">
     <input id="page" type="number" inputmode="numeric" min="1" aria-label="이동할 쪽 번호" title="쪽 번호를 입력하고 Enter">
     <span id="total"></span>
   </form>
   <span class="sr" id="count" aria-live="polite"></span>
+  <button id="prev" type="button" aria-label="이전 슬라이드">이전</button>
   <button id="next" type="button" aria-label="다음 슬라이드">다음</button>
   <button class="theme" id="theme" type="button" aria-label="밝은/어두운 화면 전환">화면 모드</button>
 </nav>
@@ -2997,19 +2817,15 @@ PCFkb2N0eXBlIGh0bWw+DQo8aHRtbCBsYW5nPSJrbyI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0
     });
   });
 
-  // ----- "버튼을 누르면" demo: runs the same hello() shown on the slide -----
-  var tryName = document.getElementById('try-name');
-  function tryHello() {
-    var name = tryName.value;
-    var msg = name + ' 님, 안녕하세요!';
-    document.getElementById('try-out').textContent = msg;
-  }
-  document.getElementById('try-btn').addEventListener('click', tryHello);
-  tryName.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { tryHello(); }
+  // ----- JavaScript slide: a button whose click listener students find and remove in DevTools -----
+  var jsDemoCount = 0;
+  document.getElementById('js-demo').addEventListener('click', function () {
+    jsDemoCount++;
+    this.textContent = '눌러 보세요 · ' + jsDemoCount + '번';
   });
 
-  // ----- Code playgrounds ("직접 지워 보기", "AI 수정본 검증") -----
+
+  // ----- Code playgrounds ("index.html 살짝씩 수정해 보기", "AI 수정본 검증") -----
   // Each preview gets a small hook that reports JS errors back here, so the
   // slide can show what the F12 console would say.
   var ERR_HOOK = '<script>window.onerror=function(m){parent.postMessage({pgErr:String(m)},"*");};<\/script>';
@@ -3019,17 +2835,79 @@ PCFkb2N0eXBlIGh0bWw+DQo8aHRtbCBsYW5nPSJrbyI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0
     var at = m.index + m[0].length;
     return code.slice(0, at) + ERR_HOOK + code.slice(at);
   }
+  // Colour the editor: a highlighted <pre> sits behind a see-through textarea.
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function span(c, t) { return '<span class="' + c + '">' + esc(t) + '</span>'; }
+  function hlRun(code, re, cls) {
+    var out = '', last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(code))) {
+      if (!m[0]) { re.lastIndex++; continue; }
+      out += esc(code.slice(last, m.index));
+      for (var i = 1; i < m.length; i++) { if (m[i] !== undefined) { out += span(cls[i - 1], m[0]); break; } }
+      last = m.index + m[0].length;
+    }
+    return out + esc(code.slice(last));
+  }
+  function hlJs(c) {
+    return hlRun(c, /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'?|"(?:[^"\\\n]|\\.)*"?|`[^`]*`?)|\b(function|const|let|var|return|if|else|for|while|new|true|false|null|undefined|this|of|in)\b|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*(?=\s*\())/g,
+      ['h-cm', 'h-str', 'h-kw', 'h-num', 'h-fn']);
+  }
+  function hlCss(c) {
+    return hlRun(c, /(\/\*[\s\S]*?\*\/)|([^{};\s][^{};]*?(?=\s*\{))|([\w-]+(?=\s*:))|((?<=:\s*)[^;{}\s][^;{}]*)/g,
+      ['h-cm', 'h-sel', 'h-prop', 'h-val']);
+  }
+  function hlTag(t) {
+    var m = /^(<\/?)([\w!-]*)([\s\S]*?)(\/?>)?$/.exec(t);
+    var attrs = m[3].replace(/([\w-]+)(\s*=\s*)?("[^"]*"?|'[^']*'?|[^\s>]+)?|[\s\S]/g, function (all, name, eq, val) {
+      if (!name) { return esc(all); }
+      return span('h-attr', name) + (eq ? esc(eq) : '') + (val ? span('h-val', val) : '');
+    });
+    return span('h-tag', m[1] + m[2]) + attrs + (m[4] ? span('h-tag', m[4]) : '');
+  }
+  function hlHtml(code) {
+    var out = '', re = /<!--[\s\S]*?(?:-->|$)|<\/?[A-Za-z!][^>]*>?/g, last = 0, m;
+    while ((m = re.exec(code))) {
+      out += esc(code.slice(last, m.index));
+      out += m[0].slice(0, 4) === '<!--' ? span('h-cm', m[0]) : hlTag(m[0]);
+      last = re.lastIndex;
+      var open = /^<(style|script)\b/i.exec(m[0]);
+      if (open && m[0].slice(-1) === '>') {
+        var close = code.toLowerCase().indexOf('</' + open[1].toLowerCase(), last);
+        if (close < 0) { close = code.length; }
+        var body = code.slice(last, close);
+        out += open[1].toLowerCase() === 'style' ? hlCss(body) : hlJs(body);
+        last = re.lastIndex = close;
+      }
+    }
+    return out + esc(code.slice(last));
+  }
   var pgs = [];
   Array.prototype.forEach.call(document.querySelectorAll('[data-pg]'), function (box) {
     var ta = box.querySelector('.pg-code');
     var view = box.querySelector('.pg-view');
     var err = box.querySelector('.pg-err');
     var timer = null;
+    var wrap = document.createElement('div');
+    wrap.className = 'pg-edit';
+    var hl = document.createElement('pre');
+    hl.className = 'pg-hl';
+    hl.setAttribute('aria-hidden', 'true');
+    ta.parentNode.insertBefore(wrap, ta);
+    wrap.appendChild(hl);
+    wrap.appendChild(ta);
+    function paint() {
+      hl.innerHTML = hlHtml(ta.value) + ' ';
+      hl.scrollTop = ta.scrollTop; hl.scrollLeft = ta.scrollLeft;
+    }
+    ta.addEventListener('scroll', function () { hl.scrollTop = ta.scrollTop; hl.scrollLeft = ta.scrollLeft; });
     function render() {
+      paint();
       err.textContent = '';
       view.srcdoc = pgDoc(ta.value);
     }
     ta.addEventListener('input', function () {
+      paint();
       clearTimeout(timer);
       timer = setTimeout(render, 400);
     });
@@ -3056,16 +2934,6 @@ PCFkb2N0eXBlIGh0bWw+DQo8aHRtbCBsYW5nPSJrbyI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0
     if (!e.data || typeof e.data.pgErr !== 'string') { return; }
     pgs.forEach(function (p) {
       if (e.source === p.view.contentWindow) { p.err.textContent = '⚠ ' + e.data.pgErr; }
-    });
-  });
-
-  // "결과 보기" buttons reveal hidden answer cells
-  Array.prototype.forEach.call(document.querySelectorAll('[data-reveal]'), function (b) {
-    var target = document.getElementById(b.getAttribute('data-reveal'));
-    b.addEventListener('click', function () {
-      var on = target.classList.toggle('shown');
-      b.setAttribute('aria-pressed', String(on));
-      b.textContent = on ? '결과 숨기기' : '결과 보기';
     });
   });
 
@@ -3229,6 +3097,36 @@ PCFkb2N0eXBlIGh0bWw+DQo8aHRtbCBsYW5nPSJrbyI+DQo8aGVhZD4NCjxtZXRhIGNoYXJzZXQ9InV0
     }
     sx = null; sy = null;
   }, { passive: true });
+
+  // Mouse wheel / trackpad scroll moves slides. One gesture = one slide:
+  // after a move, wheel events are ignored until the gesture goes quiet.
+  function canScroll(el, dy) {
+    for (; el && el !== stage; el = el.parentElement) {
+      var oy = getComputedStyle(el).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
+        if (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0) { return true; }
+      }
+    }
+    return false;
+  }
+  var wheelSum = 0, wheelLocked = false, wheelTimer = null;
+  stage.addEventListener('wheel', function (e) {
+    if (e.ctrlKey || tocIsOpen()) { return; }
+    var t = e.target;
+    if (t && (t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) { return; }
+    var d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (!d || canScroll(t, e.deltaY)) { return; }
+    e.preventDefault();
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(function () { wheelLocked = false; wheelSum = 0; }, 200);
+    if (wheelLocked) { return; }
+    wheelSum += d;
+    if (Math.abs(wheelSum) >= 40) {
+      show(wheelSum > 0 ? idx + 1 : idx - 1);
+      wheelLocked = true;
+      wheelSum = 0;
+    }
+  }, { passive: false });
 
   document.getElementById('theme').addEventListener('click', function () {
     var root = document.documentElement;
