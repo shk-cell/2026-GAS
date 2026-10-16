@@ -23,7 +23,7 @@ using Microsoft.Win32;
 
 static class Program
 {
-    public const string DefaultUrl = "https://script.google.com/macros/s/AKfycbw6vLQMXPYAF_TFQbQfzdfhr_NACo-voFsU2adHIanvCmTl3gvyhiuai98_BkodWtbD/exec";
+    public const string DefaultUrl = "https://script.google.com/macros/s/AKfycbyg3i7GbPtPc2PuHacLzsc-sC5vCJ3Uz31hRoVTPusHIMNE8WDFlxwM7U7pnV_xnPHRIQ/exec";
     public const string Title = "교실 호출 수신기";
 
     [DllImport("user32.dll")]
